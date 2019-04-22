@@ -34,7 +34,7 @@ foldername = '0413'
 
 
 # process multiple videos
-files=glob.glob("/home/daisuke/Workplace/AIST/Count-Annotator2/videos/" + foldername + "/*")
+files=glob.glob("/home/daisuke/Workplace/Count-Annotator2/videos/" + foldername + "/*")
 
 for fname in files:
 	vname = os.path.basename(fname)
