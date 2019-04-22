@@ -30,6 +30,7 @@ def Insert_row(row_number, df, row_value):
 def dragging(event, x, y, flags, param):
 	height, width, img, fname2, csvpath, path, csvcurrentimg, resume = param
 	drag = copy.copy(img)
+	drag = cv2.rectangle(drag, (50, 50), (width-50, height-50), (0, 255, 0), thickness=1)
 	
 	if event == cv2.EVENT_MOUSEMOVE:
 		drag = cv2.circle(drag, (x, y),  5, (0, 0, 255), 2)
@@ -81,6 +82,7 @@ def dragging(event, x, y, flags, param):
 		img = cv2.circle(img, (x, y), 1, (0, 0, 0), -1)
 		img = cv2.putText(img, str(frm_ppl_cnt), (x-10,y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
 		img = cv2.putText(img, str(frm_ppl_cnt), (x-10,y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+		img = cv2.rectangle(img, (50, 50), (width-50, height-50), (0, 255, 0), thickness=1)
 		
 		print('You have counted {} people in this directory.\nThis time, you have counted {} people. Press E to stop.'.format(lastrow, frm_ppl_cnt))
 		frm_ppl_cnt = int(frm_ppl_cnt)

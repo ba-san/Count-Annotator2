@@ -50,12 +50,12 @@ for cname in files2:
 		basename = os.path.basename(cname)
 		#crpimg = cv2.imread(cname + "/" + basename[:-12] + "_annotated.jpg") #this is for checking. DO NOT DELETE IT.
 		crpimg = cv2.imread(cname + "/LAST/0.jpg")
-		pbar = tqdm(total=int(((crpimg.shape[0]-height)/y_gap)*((crpimg.shape[1]-width)/x_gap)))
+		pbar = tqdm(total=int(((crpimg.shape[0]-height-100)/y_gap)*((crpimg.shape[1]-width-100)/x_gap)))
 		pbar.set_description("{}: {}".format(cnt, os.path.basename(cname)))
 		cnt+=1
 		
-		for i in range(0, crpimg.shape[0]-height, y_gap): # y
-			for j in range(0, crpimg.shape[1]-width, x_gap): # x
+		for i in range(50, crpimg.shape[0]-height-50, y_gap): # y
+			for j in range(50, crpimg.shape[1]-width-50, x_gap): # x
 				cropped=crpimg[i:i+height, j:j+width]
 				df = pd.read_csv(csvpath, index_col=0)
 				for pt in range(start_of_newimg_index, start_of_newimg_index+csvimgcnt, 1): # http://www.kisse-logs.com/2017/04/11/python-dataframe-drop/
