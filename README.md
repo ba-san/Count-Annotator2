@@ -9,7 +9,7 @@ This can be worked on both Linux and Windows.
 It is recommended to use Python3.7.  
 1.download this repository.  
 ``` 
-git clone https://github.com/ba-san/Count-Annotator.git  
+git clone https://github.com/ba-san/Count-Annotator2.git  
 ``` 
 2.install packages.  
 ``` 
