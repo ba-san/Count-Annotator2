@@ -84,12 +84,13 @@ folder = "test" #input images in this directory
 
 Right button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  B   -- go back **JUST ONE** act  
+  D   -- delete point
+  B   -- delete latest point 
 Enter -- go to next image  
 
 ### double checking
 You must go through this section to crop.  
-If you are annotating as ateam, it is reccomended only a team leader use this script to ensure the quality.  
+If you are annotating as a team, it is reccomended only a team leader use this script to ensure the quality.  
 
 1. setting path of checker.py
 ``` 
@@ -100,6 +101,7 @@ folder = "test" #input images in this directory
 
 Right button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+  D   -- delete point
 Enter -- go to next image   
 
 ### cropping
