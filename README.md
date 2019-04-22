@@ -117,6 +117,7 @@ In this case, cropped image size is 256px x 256px
 and interval of slidng window is 30px for both x and y.  
 
 2.run by ``` python cropping.py```  
+Programme automatically detect "OO_checked" files and crops them all at once.  
 
 ## Output
 You can get both csv file and annotated images as shown on the top of this page. 
