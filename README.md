@@ -18,7 +18,7 @@ You can get good amount of training data from single frame.
 <table>
   <tr>
     <th>number of people</th>
-　　<th>number of cropped images</th>
+　　<th>number of cropped images (more than one object)</th>
 　　<th>number of cumulative points</th>
   </tr>
   <tr>
