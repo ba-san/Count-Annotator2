@@ -89,7 +89,7 @@ Enter -- go to next image
 
 ### double checking
 You must go through this section to crop.  
-It is recco
+If you are annotating as ateam, it is reccomended only a team leader use this script to ensure the quality.  
 
 1. setting path of checker.py
 ``` 
