@@ -7,7 +7,8 @@ This can be worked on both Linux and Windows.
 
 From big single frame, programme will create myriad of training data with sliding window (red boxes below).   
 <img src="https://user-images.githubusercontent.com/44015510/56486649-4a7cfd00-6513-11e9-850c-fe96eddf8929.png" width="300">
-You can count object like this.
+
+You can count object like this.  
 <img src="https://user-images.githubusercontent.com/44015510/56487430-253dbe00-6516-11e9-9778-5107ec43b058.jpg" width="300">
 
 You can get annotated images for object counting and csv file which contains each point's location.
@@ -37,14 +38,17 @@ You can get good amount of training data from single frame.
   </tr>
 </table>
 This data is gained from single 4K image.  
+
 Cropping setting (explained below) was width = 300, height = 300, x_gap = 30, y_gap = 30.  
 
 ## Ecosystem
-<img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">
-It is useful for team annotaion. Members can create training data using annotaion2.py and person in charge can check each data quality by checker.py.   
-If you annotate by annotation2.py, directories for each frame will be created (Blue).  
-After that, person in charge can check each created data by checker.py.  The directory checked by him/her will be changed to "OO_checked" (Green).   
-Finally, you can crop only checked frames by running cropping.py. Directory's name will be changed to "OO_cropped" again.  
+<img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
+
+It is useful for team annotaion. Members can create training data using annotaion2.py and person in charge can check each data quality by checker.py.    
+
+If you annotate by annotation2.py, directories for each frame will be created (Blue).     
+After that, person in charge can check each created data by checker.py.  The directory checked by him/her will be changed to "OO_checked" (Green).      
+Finally, you can crop only checked frames by running cropping.py. Directory's name will be changed to "OO_cropped" again.    
 
 ## Set up
 It is recommended to use Python3.7.  
@@ -78,11 +82,9 @@ folder = "test" #input images in this directory
 ``` 
 2.run by ``` python annotation.py```
 
-Right button click - counting object  
-  C   -- count object (moving your mouse on top of object first)  
+Right button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
   B   -- go back **JUST ONE** act  
- Esc  -- clear image and start it again  
 Enter -- go to next image  
 
 ### double checking
@@ -96,11 +98,8 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-Right button click - counting object  
-  C   -- count object (moving your mouse on top of object first)  
+Right button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  B   -- go back **JUST ONE** act  
- Esc  -- clear image and start it again  
 Enter -- go to next image   
 
 ### cropping
