@@ -5,7 +5,7 @@ This repository is a successor of [Count-Annotator](https://github.com/ba-san/Co
 You can prepare annotated images for object counting and csv file which contains each point's location.  
 This can be worked on both Linux and Windows.  
 
-From big single frame, programme will create myriad of training data with sliding window (red boxes below).   
+From big single frame, programme will create a myriad of training data with sliding window (red boxes below).   
 <img src="https://user-images.githubusercontent.com/44015510/56486649-4a7cfd00-6513-11e9-850c-fe96eddf8929.png" width="300">
 
 You can count object like this.  
@@ -37,18 +37,18 @@ You can get good amount of training data from single frame.
     <td>3280</td>
   </tr>
 </table>
-This data is gained from single 4K image.  
+This data is gained from single 4K image for each row.  
 
 Cropping setting (explained below) was width = 300, height = 300, x_gap = 30, y_gap = 30.  
 
 ## Ecosystem
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
-It is useful for team annotaion. Members can create training data using annotaion2.py and person in charge can check each data quality by checker.py.    
+Count-Annotator2 is useful for team annotaion also. Members can create training data using annotaion2.py and person in charge can check each data quality by checker.py.    
 
-If you annotate by annotation2.py, directories for each frame will be created (Blue).     
-After that, person in charge can check each created data by checker.py.  The directory checked by him/her will be changed to "OO_checked" (Green).      
-Finally, you can crop only checked frames by running cropping.py. Directory's name will be changed to "OO_cropped" again.    
+If you annotate by annotation2.py, directories for each frame will be created (Blue box).     
+After that, person in charge can check each created data by checker.py.  The directory checked by him/her will be changed to "OO_checked" (Green box).      
+Finally, you can crop only checked frames by running cropping.py. Directory's name will be changed to "OO_cropped" again (Red box).    
 
 ## Set up
 It is recommended to use Python3.7.  
