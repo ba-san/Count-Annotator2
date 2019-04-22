@@ -41,7 +41,7 @@ This data is gained from single 4K image for each row.
 
 Cropping setting (explained below) was width = 300, height = 300, x_gap = 30, y_gap = 30.  
 
-## Ecosystem
+## Directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
 Count-Annotator2 is useful for team annotaion also. Members can create training data using annotaion2.py and person in charge can check each data quality by checker.py.    
