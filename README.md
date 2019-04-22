@@ -84,8 +84,8 @@ folder = "test" #input images in this directory
 
 Right button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  D   -- delete point
-  B   -- delete latest point 
+  D   -- delete point  
+  B   -- delete latest point  
 Enter -- go to next image  
 
 ### double checking
@@ -101,7 +101,7 @@ folder = "test" #input images in this directory
 
 Right button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  D   -- delete point
+  D   -- delete point  
 Enter -- go to next image   
 
 ### cropping
