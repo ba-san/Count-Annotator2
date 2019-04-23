@@ -163,6 +163,7 @@ for fname in files:
 					cv2.imwrite(croppeddir+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)	
 					
 				img = cv2.imread(croppeddir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
+				cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
 				cv2.imshow(fname, img)
 				
 				with open(croppeddir + "/frame_people_count.txt") as f:
@@ -213,6 +214,7 @@ for fname in files:
 					#cv2.imwrite(croppeddir+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)	
 					
 				#img = cv2.imread(croppeddir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
+				#cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
 				#cv2.imshow(fname, img)
 				
 				#with open(croppeddir + "/frame_people_count.txt") as f:
