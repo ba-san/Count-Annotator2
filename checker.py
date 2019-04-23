@@ -43,7 +43,7 @@ for fname2 in files2:
 		for i in glob.glob(fname2 + "/LAST/*"):
 			LAST_item_cnt+=1
 		img = cv2.imread(fname2 + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")	
-		cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
+		cv2.namedWindow(fname2, cv2.WINDOW_NORMAL)
 		cv2.imshow(fname2, img)	
 		cv2.setMouseCallback(fname2, mouse4check.dragging, [img.shape[0], img.shape[1], img, fname2, csvpath, path, csvcurrentimg, resume])
 		
