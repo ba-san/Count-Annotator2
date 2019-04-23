@@ -37,15 +37,9 @@ def save_frame_range(video_path, step_frame, cnt,
     pbar.close()
         
             
-videoname = 'pocari_cm'
+            
 foldername = 'demo'
 
-#save_frame_range('./videos/pocari_cm.mp4', #input video
-#                 0, 10000000000, 100, # start, end, frame interval
-#                 './images/', 'pocari_cm') #output directory and output images' prefix
-
-
-# process multiple videos
 files=glob.glob(PWD + "videos/" + foldername + "/*")
 total = 0
 cnt = 1
