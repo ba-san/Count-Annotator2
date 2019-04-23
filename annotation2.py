@@ -78,6 +78,7 @@ for fname in files:
 				crpdcsv.to_csv(os.path.join(croppeddir, os.path.basename(fname) + ".csv"))
 			cv2.imwrite(croppeddir + "/LAST/0.jpg", img)
 			
+		cv2.namedWindow(fname, cv2.WINDOW_NORMAL)	
 		cv2.imshow(fname, img)	
 		
 		cv2.setMouseCallback(fname, mouse.dragging, [img.shape[0], img.shape[1], img, fname, csvpath, path, croppeddir, csvcurrentimg, resume])
