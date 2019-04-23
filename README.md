@@ -3,15 +3,16 @@
 This repository is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  
 
 You can prepare annotated images for object counting and csv file which contains each point's location.  
-This can be worked on both Linux and Windows.  
+The programs can be worked on both Linux and Windows.  
 
-From big single frame, programme will create a myriad of training data with sliding window (red boxes below).   
+From a big single frame, program will create a myriad of training data.  
+To do this, images are cropped by sliding window (red boxes below).   
 <img src="https://user-images.githubusercontent.com/44015510/56486649-4a7cfd00-6513-11e9-850c-fe96eddf8929.png" width="300">
 
 You can count object like this.  
 <img src="https://user-images.githubusercontent.com/44015510/56487430-253dbe00-6516-11e9-9778-5107ec43b058.jpg" width="300">
 
-You can get annotated images for object counting and csv file which contains each point's location.
+You can get annotated images for object counting and csv file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
 
 You can get good amount of training data from single frame.  
@@ -37,18 +38,18 @@ You can get good amount of training data from single frame.
     <td>3280</td>
   </tr>
 </table>
-This data is gained from single 4K image for each row.  
+This data is gained from a single 4K(3840×2160) image for each row.  
 
 Cropping setting (explained below) was width = 300, height = 300, x_gap = 30, y_gap = 30.  
 
 ## Directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
-Count-Annotator2 is useful for team annotaion also. Members can create training data using annotaion2.py and person in charge can check each data quality by checker.py.    
+Count-Annotator2 is useful for team annotaion also. Each member can create training data using annotaion2.py and a leader can check each data quality by checker.py.    
 
-If you annotate by annotation2.py, directories for each frame will be created (Blue box).     
-After that, person in charge can check each created data by checker.py.  The directory checked by him/her will be changed to "OO_checked" (Green box).      
-Finally, you can crop only checked frames by running cropping.py. Directory's name will be changed to "OO_cropped" again (Red box).    
+When you annotate data by annotation2.py, directories for each frame will be created (Blue box).     
+After that, a leader can check each annotated frame by checker.py.  The name of directory checked by him/her will be changed to "OO_checked" (Green box).      
+Finally, you can crop checked frames by running cropping.py exclusively. Directory's name will be changed to "OO_cropped" again (Red box). This is the final deliverable.   
 
 ## Set up
 It is recommended to use Python3.7.  
@@ -80,16 +81,16 @@ save_frame_range('./videos/pocari_cm.mp4', #input video
 ``` 
 folder = "test" #input images in this directory
 ``` 
-2.run by ``` python annotation.py```
+2.run by ``` python annotation2.py```
 
-Right button click -- counting object  
+Left button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  D   -- delete point  
+  D   -- delete point by inputting point ID number  
   B   -- delete latest point  
 Enter -- go to next image  
 
 ### double checking
-You must go through this section to crop.  
+You must go through this section to crop image.  
 If you are annotating as a team, it is reccomended only a team leader use this script to ensure the quality.  
 
 1. setting path of checker.py
@@ -99,14 +100,14 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-Right button click -- counting object  
+Left button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  D   -- delete point  
-Enter -- go to next image   
+  D   -- delete point by inputting point ID number  
+Enter -- go to next image (directory's name will be changed.)   
 
 ### cropping
 
-1.set cropping image size and the interval of sliding window.  
+1.set cropped image size and the intervals of sliding window.  
 ``` 
 width = 256
 height = 256
@@ -117,7 +118,7 @@ In this case, cropped image size is 256px x 256px
 and interval of slidng window is 30px for both x and y.  
 
 2.run by ``` python cropping.py```  
-Programme automatically detect "OO_checked" files and crops them all at once.  
+Program will automatically detect "OO_checked" files and crops them all at once.  
 
 ## Output
 You can get both csv file and annotated images as shown on the top of this page. 
