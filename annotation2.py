@@ -170,7 +170,8 @@ for fname in files:
 				frm_ppl_cnt = int(frm_ppl_cnt)	
 				with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
 					f.write(str(frm_ppl_cnt-1))
-					
+			
+			#this is for future
 			#elif k==102: #input 'f'
 						
 				#csvimgcnt=0
