@@ -83,7 +83,7 @@ folder = "test" #input images in this directory
 ``` 
 2.run by ``` python annotation2.py```
 
-Right button click -- counting object  
+Left button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
   D   -- delete point by inputting point ID number  
   B   -- delete latest point  
@@ -100,7 +100,7 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-Right button click -- counting object  
+Left button click -- counting object  
   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
   D   -- delete point by inputting point ID number  
 Enter -- go to next image (directory's name will be changed.)   
