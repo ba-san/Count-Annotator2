@@ -70,9 +70,12 @@ Most of this script is owe to [this page](https://note.nkmk.me/python-opencv-vid
 1. setting path and frame of video2img.py  
 
 ``` 
-save_frame_range('./videos/pocari_cm.mp4', #input video
-                 0, 10000000000, 100, # start, end, frame
-                 './images/', 'pocari_cm') #output directory and output images' prefix
+foldername = 'demo'
+``` 
+You can change interval of frames here.  
+Just change the number below.  
+``` 
+	30, cnt, # frame interval, counting videos
 ``` 
 2. run by ``` python video2img.py```  
 
