@@ -90,7 +90,7 @@ folder = "test" #input images in this directory
    E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
    D   -- delete nearest point  
    B   -- delete latest point  
-I,J,K,N-- move pointer up, left, right, down respectively
+I,J,K,N-- move pointer up, left, right, down respectively  
  Enter -- go to next image  
 
 ### double checking
@@ -107,7 +107,7 @@ folder = "test" #input images in this directory
    C   -- counting object  
    E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
    F   -- delete nearest point   
-I,J,K,N-- move pointer up, left, right, down respectively
+I,J,K,N-- move pointer up, left, right, down respectively  
  Enter -- go to next image (directory's name will be changed.)   
 
 ### cropping
