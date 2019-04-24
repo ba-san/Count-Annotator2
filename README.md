@@ -115,11 +115,14 @@ I,J,K,N-- move pointer up, left, right, down respectively
 ### cropping
 
 1.set cropped image size and the intervals of sliding window.  
+You don't need to care thorn as long as using cropping.py.  
+Keep it to 0.  
 ``` 
 width = 256
 height = 256
 x_gap = 30
 y_gap = 30
+thorn = 0
 ``` 
 In this case, cropped image size is 256px x 256px  
 and interval of slidng window is 30px for both x and y.  
@@ -127,6 +130,11 @@ and interval of slidng window is 30px for both x and y.
 2.run by ``` python cropping.py```  
 Program will automatically detect "OO_checked" files and crops them all at once.  
 
+#### cropping4classification.py
+If you crop images by this script, you will get cropped images classified by number of containing object.  
+If you set thorn above to 0, you will get good no-object data.  
+Bigger this number is, the better object-contained data you'll get.  
+
 ## Output
-You can get both csv file and annotated images as shown on the top of this page. 
+You can get both csv file and annotated images for each frame.  
 
