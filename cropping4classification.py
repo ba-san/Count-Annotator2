@@ -13,9 +13,9 @@ files2=glob.glob(path + "/*")
 csvpath = os.path.join(path, folder) + ".csv"
 
 total = 0
-cnt = 1
-width = 256
-height = 256
+fcnt = 1
+width = 512 #256
+height = 512 #256
 x_gap = 30
 y_gap = 30
 thorn = 0
@@ -52,30 +52,23 @@ for cname in files2:
 		#crpimg = cv2.imread(cname + "/" + basename[:-12] + "_annotated.jpg") #this is for checking. DO NOT DELETE IT.
 		crpimg = cv2.imread(cname + "/LAST/0.jpg")
 		pbar = tqdm(total=int(((crpimg.shape[0]-height-100)/y_gap)*((crpimg.shape[1]-width-100)/x_gap)))
-		pbar.set_description("{}: {}".format(cnt, os.path.basename(cname)))
-		cnt+=1
+		pbar.set_description("{}: {}".format(fcnt, os.path.basename(cname)))
+		fcnt+=1
 		
 		for i in range(50, crpimg.shape[0]-height-50, y_gap): # y
 			for j in range(50, crpimg.shape[1]-width-50, x_gap): # x
 				cropped=crpimg[i:i+height, j:j+width]
 				df = pd.read_csv(csvpath, index_col=0)
+				cnt = 0
 				for pt in range(start_of_newimg_index, start_of_newimg_index+csvimgcnt, 1): # http://www.kisse-logs.com/2017/04/11/python-dataframe-drop/
-					if df.loc[pt, 'image'] == cname[:-8]:
+					if df.loc[pt, 'image'] == cname[:-8]: #double check
 						pt_x = df.loc[pt, 'x']
 						pt_y = df.loc[pt, 'y']
 						if j + thorn <= pt_x and pt_x <= j + width - thorn and i + thorn <= pt_y  and pt_y <= i + height - thorn:
-							cv2.imwrite(cname + "/" + os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg", cropped)
-							crpdcsv = pd.read_csv(os.path.join(cname, basename[:-8] + ".csv"), index_col=0)
-							series = pd.Series([os.path.join(path, os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg"), pt_x-j, pt_y-i], index=crpdcsv.columns)
-							crpdcsv = crpdcsv.append(series, ignore_index=True)
-							crpdcsv.to_csv(os.path.join(cname, basename[:-8] + ".csv"))
-						else: #no human data
-							cv2.imwrite(cname + "/" + os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg", cropped)
-							crpdcsv = pd.read_csv(os.path.join(cname, basename[:-8] + ".csv"), index_col=0)
-							series = pd.Series([os.path.join(path, os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg"), -1, -1], index=crpdcsv.columns)
-							crpdcsv = crpdcsv.append(series, ignore_index=True)
-							crpdcsv.to_csv(os.path.join(cname, basename[:-8] + ".csv"))
-							break
+							cnt+=1
+				if not os.path.exists(cname + "/" + str(cnt) + "/"):
+					os.makedirs(cname + "/" + str(cnt) + "/")
+				cv2.imwrite(cname + "/" + str(cnt) + "/" + os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg", cropped)
 				pbar.update(1)
 		pbar.close()
 		os.rename(cname, cname[:-8]+"_cropped")
