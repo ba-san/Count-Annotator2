@@ -86,11 +86,12 @@ folder = "test" #input images in this directory
 ``` 
 2.run by ``` python annotation2.py```
 
-Left button click -- counting object  
-  E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  D   -- delete point by inputting point ID number  
-  B   -- delete latest point  
-Enter -- go to next image  
+   C   -- counting object  
+   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+   D   -- delete nearest point  
+   B   -- delete latest point  
+I,J,K,N-- move pointer up, left, right, down respectively
+ Enter -- go to next image  
 
 ### double checking
 You must go through this section to crop image.  
@@ -103,10 +104,11 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-Left button click -- counting object  
-  E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-  D   -- delete point by inputting point ID number  
-Enter -- go to next image (directory's name will be changed.)   
+   C   -- counting object  
+   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+   F   -- delete nearest point   
+I,J,K,N-- move pointer up, left, right, down respectively
+ Enter -- go to next image (directory's name will be changed.)   
 
 ### cropping
 
