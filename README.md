@@ -96,6 +96,8 @@ I,J,K,N-- move pointer up, left, right, down respectively
 ### double checking
 You must go through this section to crop image.  
 If you are annotating as a team, it is reccomended only a team leader use this script to ensure the quality.  
+If you will run checker.py at different env from "OO_output" was originally created, **change images' path inside
+OO.csv to match to your env!!**   
 
 1. setting path of checker.py
 ``` 
