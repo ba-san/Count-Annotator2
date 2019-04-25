@@ -86,8 +86,8 @@ folder = "test" #input images in this directory
 ``` 
 2.run by ``` python annotation2.py```
 
-   C   -- counting object  
-   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+   C   -- count object  
+   E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
    F   -- delete nearest point  
    B   -- delete latest point  
 I,J,K,N-- move pointer up, left, right, down respectively  
@@ -106,8 +106,8 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-   C   -- counting object  
-   E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+   C   -- count object  
+   E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
    F   -- delete nearest point   
 I,J,K,N-- move pointer up, left, right, down respectively  
  Enter -- go to next image (directory's name will be changed.)   
