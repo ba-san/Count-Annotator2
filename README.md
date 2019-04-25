@@ -88,7 +88,7 @@ folder = "test" #input images in this directory
 
    C   -- counting object  
    E   -- stop annotating. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-   D   -- delete nearest point  
+   F   -- delete nearest point  
    B   -- delete latest point  
 I,J,K,N-- move pointer up, left, right, down respectively  
  Enter -- go to next image  
