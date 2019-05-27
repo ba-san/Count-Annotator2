@@ -86,18 +86,19 @@ folder = "test" #input images in this directory
 ``` 
 2.run by ``` python annotation2.py```
 
-   C   -- count object  
+X, C, V   -- count object(Red, Green, Blue respectiveley)  
    E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
    F   -- delete nearest point  
-   B   -- delete latest point  
+   G   -- show/remove grid  
+   U   -- fix y-cordinate of red box  
 I,J,K,N-- move pointer up, left, right, down respectively  
- Enter -- go to next image  
+ Enter(and Y)-- go to next image  
 
 ### double checking
 You must go through this section to crop image.  
 If you are annotating as a team, it is reccomended only a team leader use this script to ensure the quality.  
 If you will run checker.py at different env from "OO_output" was originally created, **change images' path inside
-OO.csv to match to your env!!**   
+OO.csv to match to your env!!**  (You can use path_changer.py for this purpose.)  
 
 1. setting path of checker.py
 ``` 
@@ -106,17 +107,21 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-   C   -- count object  
+X, C, V   -- count object(Red, Green, Blue respectiveley)  
    E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-   F   -- delete nearest point   
+   F   -- delete nearest point  
+   G   -- show/remove grid  
+   U   -- fix y-cordinate of red box  
 I,J,K,N-- move pointer up, left, right, down respectively  
- Enter -- go to next image (directory's name will be changed.)   
+ Enter(and Y)-- go to next image (directory's name will be changed.)   
 
 ### cropping
 
+0.check each img's path inside csv is correct.  
+(You may use path_changer.py)  
+
 1.set cropped image size and the intervals of sliding window.  
-You don't need to care thorn as long as using cropping.py.  
-Keep it to 0.  
+You don't need to care thorn. Keep it to 0.  
 ``` 
 width = 256
 height = 256
@@ -132,8 +137,6 @@ Program will automatically detect "OO_checked" files and crops them all at once.
 
 #### cropping4classification.py
 If you crop images by this script, you will get cropped images classified by number of containing object.  
-If you set thorn above to 0, you will get good no-object data.  
-Bigger this number is, the better object-contained data you'll get.  
 
 ## Output
 You can get both csv file and annotated images for each frame.  
