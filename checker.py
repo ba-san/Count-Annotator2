@@ -7,7 +7,7 @@ import copy
 from tqdm import tqdm
 import linecache, shutil
 
-folder = "test" # must be "OO_output"
+folder = "C0024" # must be "OO_output"
 PWD = os.getcwd() + "/"
 path = PWD + folder + "_output"
 files2=glob.glob(path + "/*")
@@ -311,6 +311,11 @@ for fname2 in files2:
 				
 			elif k==117: #input 'u'
 				x_fix = -x_fix
+				
+			elif k==114: #input 'r'
+				print('Enter new outer_circle:')
+				new_outer_circle = input()
+				outer_circle = int(new_outer_circle)
 			
 			else:
 				if end == 1:
