@@ -346,6 +346,11 @@ for fname in files:
 			elif k==117: #input 'u'
 				x_fix = -x_fix
 								
+			elif k==114: #input 'r'
+				print('Enter new outer_circle:')
+				new_outer_circle = input()
+				outer_circle = int(new_outer_circle)
+				
 			else:
 				if end == 1:
 					print('Cancelled.')
