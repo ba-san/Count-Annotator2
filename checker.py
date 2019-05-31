@@ -316,7 +316,15 @@ for fname2 in files2:
 				print('Enter new outer_circle:')
 				new_outer_circle = input()
 				outer_circle = int(new_outer_circle)
+				
+			elif k==115: #input 's'
+				outer_circle = outer_circle - 1
+				if outer_circle == 0:
+					outer_circle = 1
 			
+			elif k==100: #input 'd'
+				outer_circle = outer_circle + 1
+				
 			else:
 				if end == 1:
 					print('Cancelled.')
