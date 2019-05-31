@@ -114,13 +114,14 @@ def delete_nearest_pt(csvpath, path, fname):
 			recov_x = df.loc[start_of_newimg_index+j+int(num)-2, 'x']	
 			recov_y = df.loc[start_of_newimg_index+j+int(num)-2, 'y']	
 			recov_color = df.loc[start_of_newimg_index+j+int(num)-2, 'color']	
+			recov_outer_circle = df.loc[start_of_newimg_index+j+int(num)-2, 'outer_circle']	
 			
 			if recov_color=='g': #green
-				recov = cv2.circle(recov, (recov_x, recov_y), outer_circle, (0, 255, 0), 2)
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 255, 0), 2)
 			elif recov_color=='b': #blue
-				recov = cv2.circle(recov, (recov_x, recov_y), outer_circle, (255, 0, 0), 2)	
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), 2)	
 			else: #red
-				recov = cv2.circle(recov, (recov_x, recov_y), outer_circle, (0, 0, 255), 2)
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), 2)
 					
 			recov = cv2.circle(recov, (recov_x, recov_y), 1, (255, 255, 255), -1)
 			recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
@@ -170,7 +171,7 @@ def initial_frame_setting(croppeddir, fname, img):
 		os.makedirs(croppeddir + "/LAST/")
 		with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
 			f.write('1')
-		crpdcsv = pd.DataFrame(columns=['image', 'x', 'y', 'color'])
+		crpdcsv = pd.DataFrame(columns=['image', 'x', 'y', 'color', 'outer_circle'])
 		crpdcsv.to_csv(os.path.join(croppeddir, os.path.basename(fname) + ".csv"))
 	cv2.imwrite(croppeddir + "/LAST/0.jpg", img)
 	
@@ -179,7 +180,7 @@ def initial_frame_setting(croppeddir, fname, img):
 
 if not os.path.exists(path):
 	os.makedirs(path)
-	df = pd.DataFrame(columns=['image', 'x', 'y', 'color'])
+	df = pd.DataFrame(columns=['image', 'x', 'y', 'color', 'outer_circle'])
 	df.to_csv(csvpath)
 	resume = 0
 	
@@ -291,11 +292,11 @@ for fname in files:
 				
 				df = pd.read_csv(csvpath, index_col=0)
 				if k==120:
-					series = pd.Series([os.path.join(path, os.path.basename(fname)), dis_x, dis_y, 'r'], index=df.columns)
+					series = pd.Series([os.path.join(path, os.path.basename(fname)), dis_x, dis_y, 'r', outer_circle], index=df.columns)
 				elif k==99:
-					series = pd.Series([os.path.join(path, os.path.basename(fname)), dis_x, dis_y, 'g'], index=df.columns)
+					series = pd.Series([os.path.join(path, os.path.basename(fname)), dis_x, dis_y, 'g', outer_circle], index=df.columns)
 				elif k==118:
-					series = pd.Series([os.path.join(path, os.path.basename(fname)), dis_x, dis_y, 'b'], index=df.columns)
+					series = pd.Series([os.path.join(path, os.path.basename(fname)), dis_x, dis_y, 'b', outer_circle], index=df.columns)
 				df = df.append(series, ignore_index=True)
 				df.to_csv(csvpath)
 				if resume == 1:
@@ -350,6 +351,14 @@ for fname in files:
 				print('Enter new outer_circle:')
 				new_outer_circle = input()
 				outer_circle = int(new_outer_circle)
+			
+			elif k==115: #input 's'
+				outer_circle = outer_circle - 1
+				if outer_circle == 0:
+					outer_circle = 1
+			
+			elif k==100: #input 'd'
+				outer_circle = outer_circle + 1
 				
 			else:
 				if end == 1:

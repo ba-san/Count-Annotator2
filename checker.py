@@ -113,14 +113,15 @@ def delete_nearest_pt(csvpath, path, fname):
 		for j in range(1, i+1, 1):
 			recov_x = df.loc[start_of_newimg_index+j+int(num)-2, 'x']	
 			recov_y = df.loc[start_of_newimg_index+j+int(num)-2, 'y']
-			recov_color = df.loc[start_of_newimg_index+j+int(num)-2, 'color']		
+			recov_color = df.loc[start_of_newimg_index+j+int(num)-2, 'color']	
+			recov_outer_circle = df.loc[start_of_newimg_index+j+int(num)-2, 'outer_circle']		
 			
 			if recov_color=='g': #green
-				recov = cv2.circle(recov, (recov_x, recov_y), outer_circle, (0, 255, 0), 2)
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 255, 0), 2)
 			elif recov_color=='b': #blue
-				recov = cv2.circle(recov, (recov_x, recov_y), outer_circle, (255, 0, 0), 2)	
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), 2)	
 			else: #red
-				recov = cv2.circle(recov, (recov_x, recov_y), outer_circle, (0, 0, 255), 2)	
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), 2)	
 								
 			recov = cv2.circle(recov, (recov_x, recov_y), 1, (255, 255, 255), -1)
 			recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
@@ -262,11 +263,11 @@ for fname2 in files2:
 				
 				df = pd.read_csv(csvpath, index_col=0)
 				if k==120:
-					df = Insert_row(row+1, df, [os.path.join(path, os.path.basename(fname2)), dis_x, dis_y, 'r'])
+					df = Insert_row(row+1, df, [os.path.join(path, os.path.basename(fname2)), dis_x, dis_y, 'r', outer_circle])
 				elif k==99:
-					df = Insert_row(row+1, df, [os.path.join(path, os.path.basename(fname2)), dis_x, dis_y, 'g'])
+					df = Insert_row(row+1, df, [os.path.join(path, os.path.basename(fname2)), dis_x, dis_y, 'g', outer_circle])
 				elif k==118:
-					df = Insert_row(row+1, df, [os.path.join(path, os.path.basename(fname2)), dis_x, dis_y, 'b'])
+					df = Insert_row(row+1, df, [os.path.join(path, os.path.basename(fname2)), dis_x, dis_y, 'b', outer_circle])
 				df.to_csv(csvpath)
 				if resume == 1:
 					LAST_item_cnt = 0
@@ -316,7 +317,15 @@ for fname2 in files2:
 				print('Enter new outer_circle:')
 				new_outer_circle = input()
 				outer_circle = int(new_outer_circle)
+				
+			elif k==115: #input 's'
+				outer_circle = outer_circle - 1
+				if outer_circle == 0:
+					outer_circle = 1
 			
+			elif k==100: #input 'd'
+				outer_circle = outer_circle + 1
+				
 			else:
 				if end == 1:
 					print('Cancelled.')
