@@ -9,9 +9,6 @@ From a big single frame, program will create a myriad of training data.
 To do this, images are cropped by sliding window (red boxes below).   
 <img src="https://user-images.githubusercontent.com/44015510/56486649-4a7cfd00-6513-11e9-850c-fe96eddf8929.png" width="300">
 
-You can count object like this.  
-<img src="https://user-images.githubusercontent.com/44015510/56487430-253dbe00-6516-11e9-9778-5107ec43b058.jpg" width="300">
-
 You can get annotated images for object counting and csv file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
 
