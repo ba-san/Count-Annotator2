@@ -83,13 +83,14 @@ folder = "test" #input images in this directory
 ``` 
 2.run by ``` python annotation2.py```
 
-X, C, V   -- count object(Red, Green, Blue respectiveley)  
-   E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-   F   -- delete nearest point  
-   G   -- show/remove grid  
-   U   -- fix y-cordinate of red box  
+X,C,V   -- count object(Red, Green, Blue respectiveley)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F   -- delete nearest point  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G   -- show/remove grid  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U   -- fix y-cordinate of red box  
 I,J,K,N-- move pointer up, left, right, down respectively  
- Enter(and Y)-- go to next image  
+&nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
+Enter(and Y)-- go to next image  
 
 ### double checking
 You must go through this section to crop image.  
@@ -104,13 +105,14 @@ folder = "test" #input images in this directory
 
 2. run by ``` python checker.py```  
 
-X, C, V   -- count object(Red, Green, Blue respectiveley)  
-   E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-   F   -- delete nearest point  
-   G   -- show/remove grid  
-   U   -- fix y-cordinate of red box  
+X,C,V   -- count object(Red, Green, Blue respectiveley)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;E   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F   -- delete nearest point  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;G   -- show/remove grid  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;U   -- fix y-cordinate of red box  
 I,J,K,N-- move pointer up, left, right, down respectively  
- Enter(and Y)-- go to next image (directory's name will be changed.)   
+&nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
+Enter(and Y)-- go to next image (directory's name will be changed.)   
 
 ### cropping
 
