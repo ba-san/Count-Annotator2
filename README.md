@@ -6,9 +6,12 @@ You can prepare annotated images for object counting and csv file which contains
 The programs can be worked on both Linux and Windows.  
 
 From a big single frame, program will create a myriad of training data.  
-To do this, images are cropped by sliding window (red boxes below).   
-<img src="https://user-images.githubusercontent.com/44015510/56486649-4a7cfd00-6513-11e9-850c-fe96eddf8929.png" width="300">
-
+To do this, 1.input images.  
+<img src="https://user-images.githubusercontent.com/44015510/59644900-02dcbf80-91aa-11e9-8e96-0847db5d2e67.jpg" width="300">  
+2.count things.  
+<img src="https://user-images.githubusercontent.com/44015510/59645630-e478c300-91ad-11e9-9406-835be1d12c07.jpg" width="300">  
+3.images are cropped by sliding window (red boxes below).   
+<img src="https://user-images.githubusercontent.com/44015510/59646557-6c60cc00-91b2-11e9-81a4-dfa8adba1004.png" width="300">  
 You can get annotated images for object counting and csv file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
 
