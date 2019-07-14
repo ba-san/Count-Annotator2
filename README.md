@@ -42,6 +42,12 @@ This data is gained from a single 4K(3840×2160) image for each row.
 
 Cropping setting (explained below) was width = 300, height = 300, x_gap = 30, y_gap = 30.  
 
+## Workflow
+
+video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation2.py --> checker.py  
+--> cropping4classification_parallel2.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset3.py  
+--> move created folder to lessen --> lessen.py --> image_resize_LANCZOS.py
+
 ## Directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
