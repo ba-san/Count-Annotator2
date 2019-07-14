@@ -57,6 +57,6 @@ for fname in files:
 	vname = os.path.basename(fname)
 	prefix = vname.split(".")
 	save_frame_range('./videos/' + foldername + '/' + vname, #input video
-	30, cnt, # frame interval, counting videos
+	60, cnt, # frame interval, counting videos
 	'./' + foldername + '_image/' + vname, prefix[0]) #output directory and output images' prefix
 	cnt+=1

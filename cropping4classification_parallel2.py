@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='cropping by class')
 parser.add_argument('-cn', '--change_name', help='change "OO_checked" to "OO_cropped" (y/n) ', default = 'n')
 args = parser.parse_args()
 
-folder = "only4test-01" # must be "OO_output"
+folder = "pocari-cm.mp4" # must be "OO_output"
 PWD = os.getcwd() + "/"
 path = PWD + folder + "_output"
 files2=glob.glob(path + "/*")
@@ -22,8 +22,8 @@ global total, fcnt, width, height, x_gap, y_gap, thorn, info
 
 total = 0
 fcnt = 1
-width = 384
-height = 384
+width = 256
+height = 256
 x_gap = 30
 y_gap = 30
 thorn = 0 #always be 0

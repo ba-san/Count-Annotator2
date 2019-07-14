@@ -7,7 +7,7 @@ import copy
 from tqdm import tqdm
 import linecache, shutil
 
-folder = "test" #input images in this directory
+folder = "pocari-cm.mp4" #input images in this directory
 PWD = os.getcwd() + "/"
 files=glob.glob(PWD + folder + "/*")
 path = PWD + folder + "_output"

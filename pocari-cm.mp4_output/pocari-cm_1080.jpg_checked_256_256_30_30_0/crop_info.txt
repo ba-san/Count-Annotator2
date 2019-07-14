@@ -1,0 +1,5 @@
+width=256 
+height=256 
+x_gap=30 
+y_gap=30 
+thorn=0
