@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='cropping by class')
 parser.add_argument('-cn', '--change_name', help='change "OO_checked" to "OO_cropped" (y/n) ', default = 'n')
 args = parser.parse_args()
 
-folder = "C0020" # must be "OO_output"
+folder = "only4test-01" # must be "OO_output"
 PWD = os.getcwd() + "/"
 path = PWD + folder + "_output"
 files2=glob.glob(path + "/*")
@@ -22,8 +22,8 @@ global total, fcnt, width, height, x_gap, y_gap, thorn, info
 
 total = 0
 fcnt = 1
-width = 128
-height = 128
+width = 384
+height = 384
 x_gap = 30
 y_gap = 30
 thorn = 0 #always be 0
@@ -85,6 +85,8 @@ def cropping(cname):
 		
 		for i in range(50, crpimg.shape[0]-height-50, y_gap): # y
 			for j in range(50, crpimg.shape[1]-width-50, x_gap): # x
+				x_list = []
+				y_list = []
 				cropped=crpimg[i:i+height, j:j+width]
 				df = pd.read_csv(csvpath_read, index_col=0)
 				cnt = 0
@@ -94,8 +96,20 @@ def cropping(cname):
 						pt_y = df.loc[pt, 'y']
 						if j + thorn <= pt_x and pt_x <= j + width - thorn and i + thorn <= pt_y  and pt_y <= i + height - thorn: # right left up down
 							cnt+=1
+							x_list.append(pt_x-j)
+							y_list.append(pt_y-i)
 				if not os.path.exists(cname + "/" + str(cnt) + "/"):
 					os.makedirs(cname + "/" + str(cnt) + "/")
+					num_df = pd.DataFrame(columns=['image', 'x', 'y', 'num'])
+					num_df.to_csv(cname + "/" + str(cnt) + "/" + str(cnt) + "_" + os.path.basename(cname) + ".csv")
+				
+				num_df = pd.read_csv(cname + "/" + str(cnt) + "/" + str(cnt) + "_" + os.path.basename(cname) + ".csv", index_col=0)
+				
+				for k in range(len(x_list)):
+					nseries = pd.Series([cname[:-8] + "_cropped/" + str(cnt) + "/" + os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg", x_list[k], y_list[k], cnt], index=num_df.columns)
+					num_df = num_df.append(nseries, ignore_index=True)
+				
+				num_df.to_csv(cname + "/" + str(cnt) + "/" + str(cnt) + "_" + os.path.basename(cname) + ".csv")
 				cv2.imwrite(cname + "/" + str(cnt) + "/" + os.path.basename(cname) + "_" + str(j) + "_" + str(i) + ".jpg", cropped)
 				
 				cw = pd.read_csv(csvpath_write, index_col=0)
