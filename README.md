@@ -15,33 +15,6 @@ To do this, 1.input images.
 You can get annotated images for object counting and csv file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
 
-You can get good amount of training data from single frame.  
-<table>
-  <tr>
-    <th>number of people</th>
-　　<th>number of cropped images (more than one object)</th>
-　　<th>number of cumulative points</th>
-  </tr>
-  <tr>
-    <td>155</td>
-    <td>4587</td>
-    <td>14579</td>
-  </tr>
-  <tr>
-    <td>117</td>
-    <td>4050</td>
-    <td>10240</td>
-  </tr>
-  <tr>
-    <td>38</td>
-    <td>1541</td>
-    <td>3280</td>
-  </tr>
-</table>
-This data is gained from a single 4K(3840×2160) image for each row.  
-
-Cropping setting (explained below) was width = 300, height = 300, x_gap = 30, y_gap = 30.  
-
 ## Workflow
 
 video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation2.py --> checker.py  
@@ -69,7 +42,7 @@ pip install -r requirements.txt
 ``` 
 
 ## How to use
-### making videos to images
+### converting videos into images
 If you won't use video as input, you can skip here.  
 Most of this script is owe to [this page](https://note.nkmk.me/python-opencv-video-to-still-image/).   
 
@@ -124,9 +97,8 @@ I,J,K,N-- move pointer up, left, right, down respectively
 Enter(and Y)-- go to next image (directory's name will be changed.)   
 
 ### cropping
-
 0.check each img's path inside csv is correct.  
-(You may use path_changer.py)  
+(You need to use path_changer.py beforehand if the cropping directory is different from annotation or double checking directory. )  
 
 1.set cropped image size and the intervals of sliding window.  
 You don't need to care thorn. Keep it to 0.  
