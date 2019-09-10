@@ -5,12 +5,12 @@ This repository is a successor of [Count-Annotator](https://github.com/ba-san/Co
 You can prepare annotated images for object counting and csv file which contains each point's location.  
 The programs can be worked on both Linux and Windows.  
 
-From a big single frame, program will create a myriad of training data.  
-To do this, 1.input images.  
+From a big single frame, this program will create a myriad of cropped images.  
+To do this, 1.input original images.  
 <img src="https://user-images.githubusercontent.com/44015510/59644900-02dcbf80-91aa-11e9-8e96-0847db5d2e67.jpg" width="300">  
-2.count things.  
+2.count objects.  
 <img src="https://user-images.githubusercontent.com/44015510/59645630-e478c300-91ad-11e9-9406-835be1d12c07.jpg" width="300">  
-3.images are cropped by sliding window (red boxes below).   
+3.crop images by sliding window (red boxes below).   
 <img src="https://user-images.githubusercontent.com/44015510/59646557-6c60cc00-91b2-11e9-81a4-dfa8adba1004.png" width="300">  
 You can get annotated images for object counting and csv file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
