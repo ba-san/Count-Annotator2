@@ -42,7 +42,7 @@ pip install -r requirements.txt
 ``` 
 
 ## How to use
-### 0.converting videos into images
+### 0. Converting videos into images
 If you won't use video as input, you can skip here.  
 Most of this script is owe to [this page](https://note.nkmk.me/python-opencv-video-to-still-image/).   
 
@@ -58,7 +58,7 @@ Just change the number below.
 ``` 
 2. run by ``` python video2img.py```  
 
-### 1.annotation
+### 1. Annotation
 1. setting path of annotation2.py
 ``` 
 folder = "test" #input images in this directory
@@ -74,7 +74,7 @@ I,J,K,N-- move pointer up, left, right, down respectively
 &nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
 Enter(and Y)-- go to next image  
 
-### 2.double checking
+### 2. Double checking
 You must go through this section to crop image.  
 If you are annotating as a team, it is reccomended only a team leader use this script to ensure the quality.  
 If you will run checker.py at different env from "OO_output" was originally created, **change images' path inside
@@ -96,7 +96,7 @@ I,J,K,N-- move pointer up, left, right, down respectively
 &nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
 Enter(and Y)-- go to next image (directory's name will be changed.)   
 
-### 3.cropping
+### 3. Cropping
 0.check each img's path inside csv is correct.  
 (You need to use path_changer.py beforehand if the cropping directory is different from annotation or double checking directory. )  
 
