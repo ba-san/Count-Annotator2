@@ -21,7 +21,7 @@ video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> an
 --> cropping.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset.py  
 --> move created folder to lessen --> lessen.py --> image_resize_LANCZOS.py
 
-## Directory transition  
+## Annotation directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
 Count-Annotator2 is useful for team annotaion also. Each member can create training data using annotaion2.py and a leader can check each data quality by checker.py.    
@@ -59,11 +59,11 @@ Just change the number below.
 2. run by ``` python video2img.py```  
 
 ### 1. Annotation
-1. setting path of annotation2.py
+1. setting path of annotation.py
 ``` 
 folder = "test" #input images in this directory
 ``` 
-2.run by ``` python annotation2.py```
+2.run by ``` python annotation.py```
 
 X,C,V   -- count object(Red, Green, Blue respectiveley)  
 &nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
@@ -112,12 +112,29 @@ thorn = 0
 In this case, cropped image size is 256px x 256px  
 and interval of slidng window is 30px for both x and y.  
 
-2.run by ``` python cropping.py```  
+2.run by ```python cropping.py```  
 Program will automatically detect "OO_checked" files and crops them all at once.  
 
-#### cropping4classification.py
-If you crop images by this script, you will get cropped images classified by number of containing object.  
+3.integrate cropped images.
+run by ```python integrate_img4dataset.py```  
 
-## Output
-You can get both csv file and annotated images for each frame.  
+### 4. Downsampling
+0.move cropped directory into 'lessen' directory.
 
+1.set below things inside lessen.py 
+``` 
+source = "pocari-cm.mp4_output_256_256_30_30_0" # set name of the directory
+max_train = 222 # maximum number of train image per class
+max_test = 153 # maximum number of test image per class 
+``` 
+
+2.run by ```python lessen.py```  
+
+### 5. Resize
+0.set below things inside image_resize_LANCZOS.py
+``` 
+dirname = "pocari-cm.mp4_output_256_256_30_30_0" # set the directory name
+resized = 32 # set the size here
+``` 
+
+1.run by ```python image_resize_LANCZOS.py```  
