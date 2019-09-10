@@ -39,7 +39,7 @@ def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname, g
 		for j in range(0, drag.shape[0], 300):
 			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=2)
 	
-	cv2.imshow(fname, drag)		
+	cv2.imshow(fname, drag)
 	enlarged = cv2.resize(drag[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
 	initenlarged = cv2.resize(initimg[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
 	initenlarged = cv2.circle(initenlarged, (300, 300),  outer_circle, (0, 0, 255), 2)
@@ -102,7 +102,7 @@ def delete_nearest_pt(csvpath, path, fname):
 	num = lowest_i + 1 - start_of_newimg_index
 	df = df.drop(lowest_i, axis = 0)
 	df = df.reset_index(drop=True)
-	df.to_csv(csvpath)		
+	df.to_csv(csvpath)
 		
 	os.remove(fname2 + "/LAST/" + str(csvimgcnt) + ".jpg")
 	iteration = csvimgcnt-int(num)
@@ -111,22 +111,22 @@ def delete_nearest_pt(csvpath, path, fname):
 		recov = cv2.imread(fname2 + "/LAST/"+str(int(num)-1)+".jpg")
 		df = pd.read_csv(csvpath, index_col=0)
 		for j in range(1, i+1, 1):
-			recov_x = df.loc[start_of_newimg_index+j+int(num)-2, 'x']	
+			recov_x = df.loc[start_of_newimg_index+j+int(num)-2, 'x']
 			recov_y = df.loc[start_of_newimg_index+j+int(num)-2, 'y']
-			recov_color = df.loc[start_of_newimg_index+j+int(num)-2, 'color']	
-			recov_outer_circle = df.loc[start_of_newimg_index+j+int(num)-2, 'outer_circle']		
+			recov_color = df.loc[start_of_newimg_index+j+int(num)-2, 'color']
+			recov_outer_circle = df.loc[start_of_newimg_index+j+int(num)-2, 'outer_circle']
 			
 			if recov_color=='g': #green
 				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 255, 0), 2)
 			elif recov_color=='b': #blue
-				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), 2)	
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), 2)
 			else: #red
-				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), 2)	
+				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), 2)
 								
 			recov = cv2.circle(recov, (recov_x, recov_y), 1, (255, 255, 255), -1)
 			recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-			recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)	
-		cv2.imwrite(fname2+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)	
+			recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+		cv2.imwrite(fname2+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)
 	
 	global img
 	img = cv2.imread(fname2 + "/LAST/" + str(csvimgcnt-1) + ".jpg")
@@ -135,9 +135,9 @@ def delete_nearest_pt(csvpath, path, fname):
 	
 	with open(fname2 + "/frame_people_count.txt") as f:
 		frm_ppl_cnt = f.read()
-	frm_ppl_cnt = int(frm_ppl_cnt)	
+	frm_ppl_cnt = int(frm_ppl_cnt)
 	with open(fname2 + "/frame_people_count.txt", mode='w') as f:
-		f.write(str(frm_ppl_cnt-1))	
+		f.write(str(frm_ppl_cnt-1))
 
 def move(dx, dy, img, fname, initimg):
 	global dis_x, dis_y
@@ -203,7 +203,7 @@ for fname2 in files2:
 
 	if not bool(glob.glob(fname2 + "/*annotated.jpg")):
 		break_check=1
-	
+
 	if break_check==0:
 		end = 0
 		initimg = cv2.imread(fname2 + "/LAST/0.jpg")
@@ -211,9 +211,9 @@ for fname2 in files2:
 		LAST_item_cnt = 0
 		for i in glob.glob(fname2 + "/LAST/*"):
 			LAST_item_cnt+=1
-		img = cv2.imread(fname2 + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")	
+		img = cv2.imread(fname2 + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
 		cv2.namedWindow(fname2, cv2.WINDOW_NORMAL)
-		cv2.imshow(fname2, img)	
+		cv2.imshow(fname2, img)
 		cv2.setMouseCallback(fname2, dragging, [initimg, img.shape[0], img.shape[1], img, fname2, path, x_fix])
 		
 		while True:
@@ -221,13 +221,13 @@ for fname2 in files2:
 			if end > 0:
 				end-=1
 					
-			## ask to move to the next image	
+			## ask to move to the next image
 			if k==13: #enter key
 				print('You are really OK to process current image and move to the next image? If yes, press \'y\'.')
 				end = 2
 				
 				
-			## check object		
+			## check object
 			elif k==120 or k==99 or k==118: # input 'x', 'c' or 'v'
 				with open(fname2 + "/frame_people_count.txt") as f:
 					frm_ppl_cnt = f.read()
@@ -254,7 +254,6 @@ for fname2 in files2:
 				with open(fname2 + "/frame_people_count.txt", mode='w') as f:
 					f.write(str(frm_ppl_cnt))
 					
-		
 				row = 0
 				df = pd.read_csv(csvpath, index_col=0)
 				for i in range(len(df)):
@@ -298,10 +297,10 @@ for fname2 in files2:
 				grid_binary = -grid_binary
 					
 			## move position by keyboard 
-			elif k==105: #input i	
+			elif k==105: #input i
 				move(0, -1, img, fname2, initimg)
 				
-			elif k==106: #input j	
+			elif k==106: #input j
 				move(-1, 0, img, fname2, initimg)
 				
 			elif k==107: #input k
@@ -333,5 +332,4 @@ for fname2 in files2:
 					
 			cv2.setMouseCallback(fname2, dragging, [initimg, img.shape[0], img.shape[1], img, fname2, path, x_fix])
 	
-		cv2.destroyAllWindows()	
-	
+		cv2.destroyAllWindows()

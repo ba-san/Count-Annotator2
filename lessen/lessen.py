@@ -4,30 +4,25 @@ import shutil
 import pandas as pd
 from joblib import Parallel, delayed
 
-random.seed(32)
+random.seed(42)
 
-#source = "name_of_folder"
-source = "pocari-cm.mp4_output_256_256_30_30_0"
-max_train = 222
-max_test = 153
+source = "pocari-cm.mp4_output_256_256_30_30_0" # set name of the directory
+max_train = 222 # maximum number of train image per class
+max_test = 153 # maximum number of test image per class 
 
 PWD = os.getcwd()
 root = os.path.join(PWD, source)
 csvpath = os.path.join(root, source + ".csv")
-
-trainf=os.path.join(root, "train")	
+trainf=os.path.join(root, "train")
 testf=os.path.join(root, "test")
-
 files = os.listdir(trainf)
-
 infocsv = pd.DataFrame(columns=['class', 'total', 'train', 'test'])
 infocsv.to_csv(csvpath)
 
-#for category in files:
 def lessen(category): 
 	if category.endswith('txt'):
 		return
-		
+	
 	if category == 'LAST':
 		shutil.rmtree(os.path.join(trainf, category))
 		shutil.rmtree(os.path.join(testf, category))
@@ -51,11 +46,11 @@ def lessen(category):
 				os.remove(os.path.join(trainf, category + "/" + train_images[i]))
 				df_train = df_train[~df_train['image'].str.contains(train_images[i])]
 				df_train = df_train.reset_index(drop=True)
-				
+		
 		df_train.to_csv(trainf + "/" + category + "/" + category + "_" + source + ".csv")
 	else:
 		shutil.rmtree(os.path.join(trainf, category))
-		
+	
 	if total_test_num >= max_test:
 		del_num = total_test_num - max_test
 		random_delete_list = random.sample(range(total_test_num), k=del_num)
@@ -66,7 +61,7 @@ def lessen(category):
 				os.remove(os.path.join(testf, category + "/" + test_images[i]))
 				df_test = df_test[~df_test['image'].str.contains(test_images[i])]
 				df_test = df_test.reset_index(drop=True)
-				
+		
 		df_test.to_csv(testf + "/" + category + "/" + category + "_" + source + ".csv")
 	else:
 		shutil.rmtree(os.path.join(testf, category))

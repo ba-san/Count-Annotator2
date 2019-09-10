@@ -1,4 +1,5 @@
-0:train:/home/daisuke/Workplace/Count-Annotator2/pocari-cm.mp4_output/pocari-cm_1320.jpg_checked_256_256_30_30_0
-1:train:/home/daisuke/Workplace/Count-Annotator2/pocari-cm.mp4_output/pocari-cm_1080.jpg_checked_256_256_30_30_0
-2:train:/home/daisuke/Workplace/Count-Annotator2/pocari-cm.mp4_output/pocari-cm_1140.jpg_checked_256_256_30_30_0
-3:train:/home/daisuke/Workplace/Count-Annotator2/pocari-cm.mp4_output/pocari-cm_1740.jpg_checked_256_256_30_30_0
+0:train:/home/daisuke/Count-Annotator2 (copy)/pocari-cm.mp4_output/pocari-cm_0960.jpg_checked_256_256_30_30_0
+1:train:/home/daisuke/Count-Annotator2 (copy)/pocari-cm.mp4_output/pocari-cm_1320.jpg_checked_256_256_30_30_0
+2:train:/home/daisuke/Count-Annotator2 (copy)/pocari-cm.mp4_output/pocari-cm_1080.jpg_checked_256_256_30_30_0
+3:train:/home/daisuke/Count-Annotator2 (copy)/pocari-cm.mp4_output/pocari-cm_1140.jpg_checked_256_256_30_30_0
+4:train:/home/daisuke/Count-Annotator2 (copy)/pocari-cm.mp4_output/pocari-cm_1740.jpg_checked_256_256_30_30_0
