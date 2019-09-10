@@ -61,10 +61,11 @@ Just change the number below.
 ### 1. Annotation
 1. setting path of annotation.py
 ``` 
-folder = "test" #input images in this directory
+folder = "pocari-cm.mp4" #input images in this directory
 ``` 
 2.run by ``` python annotation.py```
 
+#### Keyboard intructions
 X,C,V   -- count object(Red, Green, Blue respectiveley)  
 &nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
 &nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
@@ -82,11 +83,12 @@ OO.csv to match to your env!!**  (You can use path_changer.py for this purpose.)
 
 1. setting path of checker.py
 ``` 
-folder = "test" #input images in this directory
+folder = "pocari-cm.mp4" # must be "OO_output"
 ``` 
 
 2. run by ``` python checker.py```  
 
+#### Keyboard intructions
 X,C,V   -- count object(Red, Green, Blue respectiveley)  
 &nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
 &nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
@@ -100,14 +102,14 @@ Enter(and Y)-- go to next image (directory's name will be changed.)
 0.check each img's path inside csv is correct.  
 (You need to use path_changer.py beforehand if the cropping directory is different from annotation or double checking directory. )  
 
-1.set cropped image size and the intervals of sliding window.  
-You don't need to care thorn. Keep it to 0.  
+1.set cropped image size and the intervals of sliding window.   
 ``` 
-width = 256
-height = 256
-x_gap = 30
-y_gap = 30
-thorn = 0
+## change setting here ##
+width = 256 # cropped image's width
+height = 256 # cropped image's height
+x_gap = 30 # gap between cropped images' left side
+y_gap = 30 # gap between cropped images' upper side
+#########################
 ``` 
 In this case, cropped image size is 256px x 256px  
 and interval of slidng window is 30px for both x and y.  
@@ -115,8 +117,8 @@ and interval of slidng window is 30px for both x and y.
 2.run by ```python cropping.py```  
 Program will automatically detect "OO_checked" files and crops them all at once.  
 
-3.integrate cropped images.
-run by ```python integrate_img4dataset.py```  
+3.integrate cropped images.  
+Inside your 'OO_output' directory, run ```python integrate_img4dataset.py```.  
 
 ### 4. Downsampling
 0.move cropped directory into 'lessen' directory.
