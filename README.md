@@ -17,8 +17,8 @@ You can get annotated images for object counting and csv file which contains eac
 
 ## Workflow
 
-video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation2.py --> checker.py  
---> cropping4classification_parallel2.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset3.py  
+video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation.py --> checker.py  
+--> cropping.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset.py  
 --> move created folder to lessen --> lessen.py --> image_resize_LANCZOS.py
 
 ## Directory transition  
