@@ -129,6 +129,8 @@ source = "pocari-cm.mp4_output_256_256_30_30_0" # set name of the directory
 max_train = 222 # maximum number of train image per class
 max_test = 153 # maximum number of test image per class 
 ``` 
+**Note**: Please be noted that each category direcoty has one csv file.   
+You need to take this into account when run lessen.py.  
 
 2.run by ```python lessen.py```  
 
