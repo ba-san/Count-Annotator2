@@ -324,19 +324,6 @@ for fname in files:
 				elif k==102: #input 'f'
 					delete_nearest_pt(csvpath, path, fname)
 					
-				elif k==114: #input 'r'
-					print('Enter new outer_circle:')
-					new_outer_circle = input()
-					outer_circle = int(new_outer_circle)
-					
-				elif k==115: #input 's'
-					outer_circle = outer_circle - 1
-					if outer_circle == 0:
-						outer_circle = 1
-						
-				elif k==100: #input 'd'
-					outer_circle = outer_circle + 1
-					
 			### Doesn't matter whether locked below.
 			## end annotation
 			if k==101: # input 'e'
@@ -359,6 +346,19 @@ for fname in files:
 				
 			elif k==109: #input m
 				move(0, 1, img, fname, initimg)
+				
+			elif k==114: #input 'r'
+				print('Enter new outer_circle:')
+				new_outer_circle = input()
+				outer_circle = int(new_outer_circle)
+				
+			elif k==115: #input 's'
+				outer_circle = outer_circle - 1
+				if outer_circle == 0:
+					outer_circle = 1
+					
+			elif k==100: #input 'd'
+				outer_circle = outer_circle + 1
 				
 			## fix x-axis
 			elif k==117: #input 'u'
