@@ -23,6 +23,7 @@ outer_circle = 10
 rectangle_thickness = 2
 circle_thickness = 2
 grid_thickness = 2
+hist_eq = False
 
 ## https://note.nkmk.me/python-opencv-hconcat-vconcat-np-tile/
 def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
@@ -370,6 +371,12 @@ for fname in files:
 				if locked == 1: # when get locked
 					img_saved = img
 					img = initimg
+					
+					if hist_eq == True:
+						for j in range(3):
+							img[:, :, j] = cv2.equalizeHist(img[:, :, j])  # equalize for each channel
+						img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # for general equilization
+						
 				else: # when get unlocked
 					img = img_saved
 					
