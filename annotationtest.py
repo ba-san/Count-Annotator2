@@ -34,9 +34,19 @@ def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
                       for im in im_list]
     return cv2.hconcat(im_list_resize)
 
-def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname, image_process_check):
+def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname):
 	drag = cv2.rectangle(drag, (start_x, start_y), (end_x, end_y), (0, 0, 255), thickness=rectangle_thickness)
 	
+	cv2.imshow(fname, drag)
+	enlarged = cv2.resize(drag[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
+	initenlarged = cv2.resize(initimg[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
+	initenlarged = cv2.circle(initenlarged, (300, 300),  outer_circle, (0, 0, 255), circle_thickness)
+	initenlarged = cv2.circle(initenlarged, (300, 300), 1, (255, 255, 255), -1)
+	rightimg = cv2.vconcat([enlarged, initenlarged])
+	fullimg = hconcat_resize_min([drag,rightimg])
+	cv2.imshow(fname, fullimg)
+	
+def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_process_check):
 	## hist
 	if image_process_check['hist'] == 1:
 		for j in range(3):
@@ -55,47 +65,35 @@ def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname, i
 		for j in range(0, drag.shape[0], 300):
 			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=grid_thickness)
 	
-	
-	cv2.imshow(fname, drag)
-	enlarged = cv2.resize(drag[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
-	initenlarged = cv2.resize(initimg[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
-	initenlarged = cv2.circle(initenlarged, (300, 300),  outer_circle, (0, 0, 255), circle_thickness)
-	initenlarged = cv2.circle(initenlarged, (300, 300), 1, (255, 255, 255), -1)
-	rightimg = cv2.vconcat([enlarged, initenlarged])
-	fullimg = hconcat_resize_min([drag,rightimg])
-	cv2.imshow(fname, fullimg)
-	
-def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_process_check):
-	
 	drag = cv2.circle(drag, (dis_x, dis_y),  outer_circle, (0, 0, 255), circle_thickness)
 	drag = cv2.circle(drag, (dis_x, dis_y), 1, (255, 255, 255), -1)
 	
 	if dis_y-150 <= 0 and 0 <= dis_x-150 and dis_x+150 <= width: #upper
-		inside_discriminator(drag, initimg, dis_x-150, 0, dis_x+150, 300, fname, image_process_check)
+		inside_discriminator(drag, initimg, dis_x-150, 0, dis_x+150, 300, fname)
 		
 	elif dis_x-150 <= 0 and 0 <= dis_y-150 and dis_y+150 <= height: #left
-		inside_discriminator(drag, initimg, 0, dis_y-150, 300, dis_y+150, fname, image_process_check)
+		inside_discriminator(drag, initimg, 0, dis_y-150, 300, dis_y+150, fname)
 		
 	elif dis_y+150 >= height and 0 <= dis_x-150 and dis_x+150 <= width: #bottom
-		inside_discriminator(drag, initimg, dis_x-150, height-300, dis_x+150, height, fname, image_process_check)
+		inside_discriminator(drag, initimg, dis_x-150, height-300, dis_x+150, height, fname)
 		
 	elif dis_x+150 >= width and 0 <= dis_y-150 and dis_y+150 <= height: #right
-		inside_discriminator(drag, initimg, width-300, dis_y-150, width, dis_y+150, fname, image_process_check)
+		inside_discriminator(drag, initimg, width-300, dis_y-150, width, dis_y+150, fname)
 		
 	elif dis_y-150 <= 0 and dis_x-150 <= 0: #upper left
-		inside_discriminator(drag, initimg, 0, 0, 300, 300, fname, image_process_check)
+		inside_discriminator(drag, initimg, 0, 0, 300, 300, fname)
 		
 	elif dis_y-150 <= 0 and dis_x+150 >= width: #upper right
-		inside_discriminator(drag, initimg, width-300, 0, width, 300, fname, image_process_check)
+		inside_discriminator(drag, initimg, width-300, 0, width, 300, fname)
 		
 	elif dis_y+150 >= height and dis_x-150 <= 0: #bottom left
-		inside_discriminator(drag, initimg, 0, height-300, 300, height, fname, image_process_check)
+		inside_discriminator(drag, initimg, 0, height-300, 300, height, fname)
 		
 	elif dis_y+150 >= height and dis_x+150 >= width: #bottom right
-		inside_discriminator(drag, initimg, width-300, height-300, width, height, fname, image_process_check)
+		inside_discriminator(drag, initimg, width-300, height-300, width, height, fname)
 		
 	else:
-		inside_discriminator(drag, initimg, dis_x-150, dis_y-150, dis_x+150, dis_y+150, fname, image_process_check)
+		inside_discriminator(drag, initimg, dis_x-150, dis_y-150, dis_x+150, dis_y+150, fname)
 	
 def delete_nearest_pt(csvpath, path, fname):
 	global img
@@ -351,11 +349,11 @@ for fname in files:
 			## show/remove grid
 			elif k==103: #input 'g'
 				image_process_check['grid_binary'] = -image_process_check['grid_binary']
-			
+				
 			## make it sharp (unsharpmasking)
 			elif k==114: #input 'r'
 				image_process_check['sharp'] = -image_process_check['sharp']
-			
+				
 			## hist
 			elif k==112: #input 'p'
 				image_process_check['hist'] = -image_process_check['hist']
@@ -377,7 +375,7 @@ for fname in files:
 				outer_circle = outer_circle - 1
 				if outer_circle == 0:
 					outer_circle = 1
-					
+				
 			elif k==100: #input 'd'
 				outer_circle = outer_circle + 1
 				
@@ -392,8 +390,8 @@ for fname in files:
 					img_saved = img
 					img = initimg
 					
+					# Non-Local Means Denoising
 					if denoise == True:
-						# Non-Local Means Denoising
 						if isinstance(img_denoised, int): # not defined
 							img_denoised = img
 						else: # already defined
@@ -405,7 +403,6 @@ for fname in files:
 						
 				else: # when get unlocked
 					img = img_saved
-				
 				
 			else:
 				if end == 1:
