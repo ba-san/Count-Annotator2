@@ -71,7 +71,9 @@ X,C,V   -- count object(Red, Green, Blue respectiveley)
 &nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
 &nbsp;&nbsp;&nbsp;G&nbsp;&nbsp;&nbsp;   -- show/remove grid  
 &nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- fix y-cordinate of red box  
-&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;   -- refer to original/hist-eq image (some functions cannot be used while this mode)  
+&nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;   -- refer to original/denoised image (some functions cannot be used while this mode)  
+&nbsp;&nbsp;&nbsp;P&nbsp;&nbsp;&nbsp;   -- show histgram-equalized image  
+&nbsp;&nbsp;&nbsp;R&nbsp;&nbsp;&nbsp;   -- make image sharp  
 I,J,K,N-- move pointer up, left, right, down respectively  
 &nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
 Enter(and Y)-- go to next image  
