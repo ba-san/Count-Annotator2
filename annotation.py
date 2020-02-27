@@ -3,6 +3,7 @@ import cv2
 import glob
 import csv
 import pandas as pd
+import numpy as np
 import copy
 from tqdm import tqdm
 import linecache, shutil
@@ -23,7 +24,8 @@ outer_circle = 10
 rectangle_thickness = 2
 circle_thickness = 2
 grid_thickness = 2
-hist_eq = False
+denoise = True
+show_count =False
 
 ## https://note.nkmk.me/python-opencv-hconcat-vconcat-np-tile/
 def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
@@ -32,15 +34,8 @@ def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
                       for im in im_list]
     return cv2.hconcat(im_list_resize)
 
-def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname, grid_binary):
+def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname):
 	drag = cv2.rectangle(drag, (start_x, start_y), (end_x, end_y), (0, 0, 255), thickness=rectangle_thickness)
-	
-	#grid
-	if grid_binary == 1:
-		for i in range(0, drag.shape[1], 300):
-			drag = cv2.line(drag,(i,0),(i,drag.shape[0]),(102,140,58),thickness=grid_thickness)
-		for j in range(0, drag.shape[0], 300):
-			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=grid_thickness)
 	
 	cv2.imshow(fname, drag)
 	enlarged = cv2.resize(drag[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
@@ -51,37 +46,55 @@ def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname, g
 	fullimg = hconcat_resize_min([drag,rightimg])
 	cv2.imshow(fname, fullimg)
 	
-def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, grid_binary):
+def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_process_check):
+	## hist
+	if image_process_check['hist'] == 1:
+		for j in range(3):
+			drag[:, :, j] = cv2.equalizeHist(drag[:, :, j])  # equalize for each channel
+		drag = cv2.cvtColor(drag, cv2.COLOR_BGR2RGB) # for general equilization
+	
+	## make it sharp
+	if image_process_check['sharp'] == 1:
+		#kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]], np.float32) # 8 neighbors
+		kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]], np.float32) # 4 neighbors
+		drag = cv2.filter2D(drag, -1, kernel)
+	
+	## grid
+	if image_process_check['grid_binary'] == 1:
+		for i in range(0, drag.shape[1], 300):
+			drag = cv2.line(drag,(i,0),(i,drag.shape[0]),(102,140,58),thickness=grid_thickness)
+		for j in range(0, drag.shape[0], 300):
+			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=grid_thickness)
 	
 	drag = cv2.circle(drag, (dis_x, dis_y),  outer_circle, (0, 0, 255), circle_thickness)
 	drag = cv2.circle(drag, (dis_x, dis_y), 1, (255, 255, 255), -1)
 	
 	if dis_y-150 <= 0 and 0 <= dis_x-150 and dis_x+150 <= width: #upper
-		inside_discriminator(drag, initimg, dis_x-150, 0, dis_x+150, 300, fname, grid_binary)
+		inside_discriminator(drag, initimg, dis_x-150, 0, dis_x+150, 300, fname)
 		
 	elif dis_x-150 <= 0 and 0 <= dis_y-150 and dis_y+150 <= height: #left
-		inside_discriminator(drag, initimg, 0, dis_y-150, 300, dis_y+150, fname, grid_binary)
+		inside_discriminator(drag, initimg, 0, dis_y-150, 300, dis_y+150, fname)
 		
 	elif dis_y+150 >= height and 0 <= dis_x-150 and dis_x+150 <= width: #bottom
-		inside_discriminator(drag, initimg, dis_x-150, height-300, dis_x+150, height, fname, grid_binary)
+		inside_discriminator(drag, initimg, dis_x-150, height-300, dis_x+150, height, fname)
 		
 	elif dis_x+150 >= width and 0 <= dis_y-150 and dis_y+150 <= height: #right
-		inside_discriminator(drag, initimg, width-300, dis_y-150, width, dis_y+150, fname, grid_binary)
+		inside_discriminator(drag, initimg, width-300, dis_y-150, width, dis_y+150, fname)
 		
 	elif dis_y-150 <= 0 and dis_x-150 <= 0: #upper left
-		inside_discriminator(drag, initimg, 0, 0, 300, 300, fname, grid_binary)
+		inside_discriminator(drag, initimg, 0, 0, 300, 300, fname)
 		
 	elif dis_y-150 <= 0 and dis_x+150 >= width: #upper right
-		inside_discriminator(drag, initimg, width-300, 0, width, 300, fname, grid_binary)
+		inside_discriminator(drag, initimg, width-300, 0, width, 300, fname)
 		
 	elif dis_y+150 >= height and dis_x-150 <= 0: #bottom left
-		inside_discriminator(drag, initimg, 0, height-300, 300, height, fname, grid_binary)
+		inside_discriminator(drag, initimg, 0, height-300, 300, height, fname)
 		
 	elif dis_y+150 >= height and dis_x+150 >= width: #bottom right
-		inside_discriminator(drag, initimg, width-300, height-300, width, height, fname, grid_binary)
+		inside_discriminator(drag, initimg, width-300, height-300, width, height, fname)
 		
 	else:
-		inside_discriminator(drag, initimg, dis_x-150, dis_y-150, dis_x+150, dis_y+150, fname, grid_binary)
+		inside_discriminator(drag, initimg, dis_x-150, dis_y-150, dis_x+150, dis_y+150, fname)
 	
 def delete_nearest_pt(csvpath, path, fname):
 	global img
@@ -128,8 +141,9 @@ def delete_nearest_pt(csvpath, path, fname):
 				recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), circle_thickness)
 				
 			recov = cv2.circle(recov, (recov_x, recov_y), 1, (255, 255, 255), -1)
-			#recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-			#recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+			if (show_count):
+				recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
+				recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
 		cv2.imwrite(croppeddir+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)
 	
 	img = cv2.imread(croppeddir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
@@ -148,7 +162,7 @@ def move(dx, dy, img, fname, initimg):
 	dis_y=dis_y+dy
 	drag = copy.copy(img)
 	drag = cv2.rectangle(drag, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
-	discriminator(initimg, dis_x, dis_y, drag, fname, img.shape[0], img.shape[1], grid_binary)
+	discriminator(initimg, dis_x, dis_y, drag, fname, img.shape[0], img.shape[1], image_process_check)
 
 def dragging(event, x, y, flags, param):
 	initimg, height, width, img, fname, path, x_fix = param
@@ -167,7 +181,7 @@ def dragging(event, x, y, flags, param):
 	drag = cv2.rectangle(drag, (50, 50), (width-50, height-50), (40, 61, 20), thickness=2)
 	
 	if event == cv2.EVENT_MOUSEMOVE:
-		discriminator(initimg, dis_x, dis_y, drag, fname, height, width, grid_binary)
+		discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_process_check)
 
 def initial_frame_setting(croppeddir, fname, img):
 	if not os.path.exists(croppeddir):
@@ -189,11 +203,11 @@ if not os.path.exists(path):
 
 for fname in files:
 	frm_ppl_cnt = 1 #frame people count
-	break_check=0
-	global grid_binary, x_fix, locked
-	grid_binary = -1
-	x_fix = 1
+	break_check=img_denoised=0
+	global image_process_check, x_fix, locked
+	image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist': -1}
 	locked = -1
+	x_fix = 1
 	csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 	croppeddir=os.path.join(path, os.path.basename(fname))
 	
@@ -282,8 +296,9 @@ for fname in files:
 						img = cv2.circle(img, (dis_x, dis_y), outer_circle, (255, 0, 0), circle_thickness)
 						
 					img = cv2.circle(img, (dis_x, dis_y), 1, (255, 255, 255), -1)
-					#img = cv2.putText(img, str(frm_ppl_cnt), (dis_x-10,dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-					#img = cv2.putText(img, str(frm_ppl_cnt), (dis_x-10,dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+					if (show_count):
+						img = cv2.putText(img, str(frm_ppl_cnt), (dis_x-10,dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
+						img = cv2.putText(img, str(frm_ppl_cnt), (dis_x-10,dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
 					img = cv2.rectangle(img, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
 					
 					print('You have counted {} people in this directory.\nThis time, you have counted {} people. Press E to stop.'.format(lastrow, frm_ppl_cnt))
@@ -333,7 +348,15 @@ for fname in files:
 				
 			## show/remove grid
 			elif k==103: #input 'g'
-				grid_binary = -grid_binary
+				image_process_check['grid_binary'] = -image_process_check['grid_binary']
+				
+			## make it sharp (unsharpmasking)
+			elif k==114: #input 'r'
+				image_process_check['sharp'] = -image_process_check['sharp']
+				
+			## hist
+			elif k==112: #input 'p'
+				image_process_check['hist'] = -image_process_check['hist']
 				
 			## move position by keyboard 
 			elif k==105: #input i
@@ -348,16 +371,11 @@ for fname in files:
 			elif k==109: #input m
 				move(0, 1, img, fname, initimg)
 				
-			elif k==114: #input 'r'
-				print('Enter new outer_circle:')
-				new_outer_circle = input()
-				outer_circle = int(new_outer_circle)
-				
 			elif k==115: #input 's'
 				outer_circle = outer_circle - 1
 				if outer_circle == 0:
 					outer_circle = 1
-					
+				
 			elif k==100: #input 'd'
 				outer_circle = outer_circle + 1
 				
@@ -365,26 +383,31 @@ for fname in files:
 			elif k==117: #input 'u'
 				x_fix = - x_fix
 				
-			## refer to original image
+			## refer to original image or denoise image
 			elif k==116: #input 't'
 				locked = - locked
 				if locked == 1: # when get locked
 					img_saved = img
 					img = initimg
 					
-					if hist_eq == True:
-						for j in range(3):
-							img[:, :, j] = cv2.equalizeHist(img[:, :, j])  # equalize for each channel
-						img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # for general equilization
+					# Non-Local Means Denoising
+					if denoise == True:
+						if isinstance(img_denoised, int): # not defined
+							img_denoised = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
+						else: # already defined
+							img = img_denoised
+					else:
+						img = img_saved
+						
 						
 				else: # when get unlocked
 					img = img_saved
-					
+				
 			else:
 				if end == 1:
 					print('Cancelled.')
 					end = 0
-					
+			
 			cv2.setMouseCallback(fname, dragging, [initimg, img.shape[0], img.shape[1], img, fname, path, x_fix])
 			
 		successive_new_frame = 1
