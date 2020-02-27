@@ -204,7 +204,7 @@ if not os.path.exists(path):
 
 for fname in files:
 	frm_ppl_cnt = 1 #frame people count
-	break_check=0
+	break_check=img_denoised=0
 	global image_process_check, x_fix, locked
 	image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist': -1}
 	locked = -1
@@ -394,9 +394,9 @@ for fname in files:
 					
 					if denoise == True:
 						# Non-Local Means Denoising
-						if img_denoised!=0:
-							img = img_denoised
-						else:
+						if isinstance(img_denoised, int): # not defined
+							img_denoised = img
+						else: # already defined
 							img_denoised = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
 							img = img_denoised
 					else:
