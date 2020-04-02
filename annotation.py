@@ -22,7 +22,7 @@ rectangle_thickness = 2
 circle_thickness = 2
 grid_thickness = 2
 denoise = True
-show_count =False
+show_count = False
 
 ## https://note.nkmk.me/python-opencv-hconcat-vconcat-np-tile/
 def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
@@ -31,11 +31,11 @@ def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
     return cv2.hconcat(im_list_resize)
 
 def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname):
-	drag = cv2.rectangle(drag, (start_x+box_size, start_y+box_size), (end_x-box_size, end_y-box_size), (0, 0, 255), thickness=rectangle_thickness)
-	
+	#drag = cv2.rectangle(drag, (start_x+box_size, start_y+box_size), (end_x-box_size, end_y-box_size), (0, 0, 255), thickness=rectangle_thickness)
+	drag = cv2.rectangle(drag, (start_x, start_y), (end_x, end_y), (0, 0, 255), thickness=rectangle_thickness)
 	cv2.imshow(fname, drag)
-	enlarged = cv2.resize(drag[start_y + box_size + 2:end_y - box_size - 1, start_x + box_size + 2: end_x - box_size - 1], (600,600))
-	initenlarged = cv2.resize(initimg[start_y + box_size + 2:end_y - box_size - 1, start_x + box_size + 2: end_x - box_size - 1], (600,600))
+	enlarged = cv2.resize(drag[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
+	initenlarged = cv2.resize(initimg[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
 	initenlarged = cv2.circle(initenlarged, (300, 300),  outer_circle, (0, 0, 255), circle_thickness)
 	initenlarged = cv2.circle(initenlarged, (300, 300), 1, (255, 255, 255), -1)
 	rightimg = cv2.vconcat([enlarged, initenlarged])
@@ -62,21 +62,17 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_proce
 	if image_process_check['mask'] == 0:
 		mask_ul_x, mask_ul_y = dis_x, dis_y
 	else:
-		if image_process_check['mask'] == 1:
-			drag = cv2.circle(drag, (mask_ul_x, mask_ul_y), 1, (255, 255, 255), 3)
-			mask_br_x, mask_br_y = dis_x, dis_y
-			min_mask_x, max_mask_x = min(mask_br_x, mask_ul_x), max(mask_br_x, mask_ul_x)
-			min_mask_y, max_mask_y = min(mask_br_y, mask_ul_y), max(mask_br_y, mask_ul_y)
+		drag = cv2.circle(drag, (mask_ul_x, mask_ul_y), 1, (255, 255, 255), 3)
+		mask_br_x, mask_br_y = dis_x, dis_y
+		min_mask_x, max_mask_x = min(mask_br_x, mask_ul_x), max(mask_br_x, mask_ul_x)
+		min_mask_y, max_mask_y = min(mask_br_y, mask_ul_y), max(mask_br_y, mask_ul_y)
 		drag[min_mask_y:max_mask_y, min_mask_x:max_mask_x, :] = np.zeros((max_mask_y - min_mask_y, max_mask_x - min_mask_x, 3), np.uint8)
 		
-	#df = pd.read_csv(mask_csv_path, index_col=0)
-	#for i in range(1):
-		#recov_min_mask_x = df.loc[i, 'min_mask_x']
-		#recov_max_mask_x = df.loc[i, 'max_mask_x']
-		#recov_min_mask_y = df.loc[i, 'min_mask_y']
-		#recov_max_mask_y = df.loc[i, 'max_mask_y']
-		#print(recov_max_mask_y)
-		#exit()
+	df = pd.read_csv(mask_csv_path, index_col=0)
+	for i in range(len(df)):
+		recov_min_mask_x, recov_max_mask_x = df.loc[i, 'min_mask_x'], df.loc[i, 'max_mask_x']
+		recov_min_mask_y, recov_max_mask_y = df.loc[i, 'min_mask_y'], df.loc[i, 'max_mask_y']
+		drag[recov_min_mask_y:recov_max_mask_y, recov_min_mask_x:recov_max_mask_x, :] = np.zeros((recov_max_mask_y - recov_min_mask_y, recov_max_mask_x - recov_min_mask_x, 3), np.uint8)
 		
 	## make it sharp
 	if image_process_check['sharp'] == 1:
@@ -90,36 +86,37 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_proce
 			drag = cv2.line(drag,(i,0),(i,drag.shape[0]),(102,140,58),thickness=grid_thickness)
 		for j in range(0, drag.shape[0], 300):
 			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=grid_thickness)
-	
+			
 	drag = cv2.circle(drag, (dis_x, dis_y),  outer_circle, (0, 0, 255), circle_thickness)
 	drag = cv2.circle(drag, (dis_x, dis_y), 1, (255, 255, 255), -1)
+	print(dis_x, dis_y, box_size)
 	
-	if dis_y-150 <= 0 and 0 <= dis_x-150 and dis_x+150 <= width: #upper
-		inside_discriminator(drag, initimg, dis_x-150, 0, dis_x+150, 300, fname)
+	if dis_y-150-box_size <= 0 and 0 <= dis_x-150 and dis_x+150 <= width: #upper
+		inside_discriminator(drag, initimg, dis_x-150+box_size, 0+box_size, dis_x+150-box_size, 300-box_size, fname)
 		
 	elif dis_x-150 <= 0 and 0 <= dis_y-150 and dis_y+150 <= height: #left
-		inside_discriminator(drag, initimg, 0, dis_y-150, 300, dis_y+150, fname)
+		inside_discriminator(drag, initimg, 0+box_size, dis_y-150+box_size, 300-box_size, dis_y+150-box_size, fname)
 		
 	elif dis_y+150 >= height and 0 <= dis_x-150 and dis_x+150 <= width: #bottom
-		inside_discriminator(drag, initimg, dis_x-150, height-300, dis_x+150, height, fname)
+		inside_discriminator(drag, initimg, dis_x-150+box_size, height-300+box_size, dis_x+150-box_size, height-box_size, fname)
 		
 	elif dis_x+150 >= width and 0 <= dis_y-150 and dis_y+150 <= height: #right
-		inside_discriminator(drag, initimg, width-300, dis_y-150, width, dis_y+150, fname)
+		inside_discriminator(drag, initimg, width-300+box_size, dis_y-150+box_size, width-box_size, dis_y+150-box_size, fname)
 		
 	elif dis_y-150 <= 0 and dis_x-150 <= 0: #upper left
-		inside_discriminator(drag, initimg, 0, 0, 300, 300, fname)
+		inside_discriminator(drag, initimg, 0+box_size, 0+box_size, 300-box_size, 300-box_size, fname)
 		
 	elif dis_y-150 <= 0 and dis_x+150 >= width: #upper right
-		inside_discriminator(drag, initimg, width-300, 0, width, 300, fname)
+		inside_discriminator(drag, initimg, width-300+box_size, 0+box_size, width-box_size, 300-box_size, fname)
 		
 	elif dis_y+150 >= height and dis_x-150 <= 0: #bottom left
-		inside_discriminator(drag, initimg, 0, height-300, 300, height, fname)
+		inside_discriminator(drag, initimg, 0+box_size, height-300+box_size, 300-box_size, height-box_size, fname)
 		
 	elif dis_y+150 >= height and dis_x+150 >= width: #bottom right
-		inside_discriminator(drag, initimg, width-300, height-300, width, height, fname)
+		inside_discriminator(drag, initimg, width-300+box_size, height-300+box_size, width-box_size, height-box_size, fname)
 		
 	else:
-		inside_discriminator(drag, initimg, dis_x-150, dis_y-150, dis_x+150, dis_y+150, fname)
+		inside_discriminator(drag, initimg, dis_x-150+box_size, dis_y-150+box_size, dis_x+150-box_size, dis_y+150-box_size, fname)
 	
 def delete_nearest_pt(csvpath, path, fname):
 	global img
@@ -175,6 +172,21 @@ def delete_nearest_pt(csvpath, path, fname):
 	with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
 		f.write(str(frm_ppl_cnt-1))
 
+def delete_nearest_mask(mask_csv_path):
+	lowest_i = 0
+	dist = 999999999999
+	df = pd.read_csv(mask_csv_path, index_col=0)
+	
+	for i in range(len(df)):
+		cal_x, cal_y = df.loc[i, 'min_mask_x'], df.loc[i, 'min_mask_y']
+		if dist > pow(dis_x - cal_x, 2) + pow(dis_y - cal_y, 2):
+			dist = pow(dis_x - cal_x, 2) + pow(dis_y - cal_y, 2)
+			lowest_i = i
+	
+	df = df.drop(lowest_i, axis = 0)
+	df = df.reset_index(drop=True)
+	df.to_csv(mask_csv_path)
+
 def move(dx, dy, img, fname, initimg):
 	global dis_x, dis_y
 	dis_x, dis_y = dis_x+dx, dis_y+dy
@@ -227,6 +239,7 @@ if __name__ == '__main__':
 		x_fix = 1
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		croppeddir=os.path.join(path, os.path.basename(fname))
+		mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
 		
 		if resume == 1: # too deep nest.
 			if successive_new_frame == 0:
@@ -249,7 +262,7 @@ if __name__ == '__main__':
 		else:
 			img = cv2.imread(fname)
 			initial_frame_setting(croppeddir, fname, img)
-		
+			
 		if break_check==0:
 			end = 0
 			
@@ -313,19 +326,44 @@ if __name__ == '__main__':
 							
 					## ask to move to the next image
 					elif k==13: #enter key
-						print('You are really OK to process current image and move to the next image? If yes, press \'y\'.')
+						print('You are really OK to process current image and move to the next image? If yes, press \'n\'.')
 						end = 2
 						
 					## go next image
 					elif k==110 and end > 0: # 'n'
 						end = 0
-						cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname[:-4])) + "_annotated.jpg", img)
+						df = pd.read_csv(mask_csv_path, index_col=0)
+						for i in range(len(df)):
+							recov_min_mask_x, recov_max_mask_x = df.loc[i, 'min_mask_x'], df.loc[i, 'max_mask_x']
+							recov_min_mask_y, recov_max_mask_y = df.loc[i, 'min_mask_y'], df.loc[i, 'max_mask_y']
+							img[recov_min_mask_y:recov_max_mask_y, recov_min_mask_x:recov_max_mask_x, :] = np.zeros((recov_max_mask_y - recov_min_mask_y, recov_max_mask_x - recov_min_mask_x, 3), np.uint8)
+							
+						cv2.imwrite(croppeddir + "/LAST/black.jpg", img)
 						break
 						
 					## delete nearest point
 					elif k==102: #input 'f'
-						delete_nearest_pt(csvpath, path, fname)
+						try:
+							delete_nearest_pt(csvpath, path, fname)
+						except:
+							pass
 						
+					## black mask
+					elif k==118: #input 'v'
+						image_process_check['mask'] = (image_process_check['mask']+1)%2
+						
+						if image_process_check['mask']==0:
+							mask_csv = pd.read_csv(mask_csv_path, index_col=0)
+							series = pd.Series([min_mask_x, max_mask_x, min_mask_y, max_mask_y], index=mask_csv.columns)
+							mask_csv = mask_csv.append(series, ignore_index=True)
+							mask_csv.to_csv(mask_csv_path)
+							
+					elif k==100: # input 'd'
+						try:
+							delete_nearest_mask(mask_csv_path)
+						except:
+							pass
+							
 				### Doesn't matter whether locked below.
 				## end annotation
 				if k==98: # input 'b'
@@ -343,18 +381,6 @@ if __name__ == '__main__':
 				## hist
 				elif k==117: #input 'u'
 					image_process_check['hist'] = (image_process_check['hist']+1)%3
-					
-				## black mask
-				elif k==118: #input 'v'
-					image_process_check['mask'] = (image_process_check['mask']+1)%3
-					
-					if image_process_check['mask']==2:
-						print(min_mask_x, max_mask_x, min_mask_y, max_mask_y)
-						mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
-						mask_csv = pd.read_csv(mask_csv_path, index_col=0)
-						series = pd.Series([min_mask_x, max_mask_x, min_mask_y, max_mask_y], index=mask_csv.columns)
-						mask_csv = mask_csv.append(series, ignore_index=True)
-						mask_csv.to_csv(mask_csv_path)
 					
 				## move position by keyboard 
 				elif k==105: #input i
@@ -395,7 +421,7 @@ if __name__ == '__main__':
 						
 						# Non-Local Means Denoising
 						if denoise == True:
-							if isinstance(img_denoised, int): # not defined
+							if isinstance(img_denoised, int): # when not defined
 								img_denoised = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
 							else: # already defined
 								img = img_denoised
