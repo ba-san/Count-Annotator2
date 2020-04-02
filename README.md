@@ -68,7 +68,7 @@ folder = "pocari-cm.mp4" #input images in this directory
 #### Keyboard intructions
 Z,X,C   -- count object(Red, Green, Blue respectiveley)  
 &nbsp;&nbsp;&nbsp;V&nbsp;&nbsp;&nbsp;   -- cover black mask  
-&nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+&nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAY!!**  
 &nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
 &nbsp;&nbsp;&nbsp;D&nbsp;&nbsp;&nbsp;   -- delete nearest mask  
 &nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- delete white point  
@@ -77,7 +77,7 @@ Z,X,C   -- count object(Red, Green, Blue respectiveley)
 &nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;   -- refer to original/denoised image (some functions cannot be used while this mode)  
 &nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- show histgram-equalized image  
 &nbsp;&nbsp;&nbsp;Y&nbsp;&nbsp;&nbsp;   -- make image sharp  
-I,J,K,N-- move pointer up, left, right, down respectively  
+I,J,K,M-- move pointer up, left, right, down respectively  
 &nbsp;&nbsp;&nbsp;A,S  -- make circle smaller/bigger  
 &nbsp;&nbsp;&nbsp;Q,W  -- make window smaller/bigger  
 Enter(and N)-- go to next image  
