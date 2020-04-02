@@ -66,7 +66,7 @@ folder = "pocari-cm.mp4" #input images in this directory
 2.run by ``` python annotation.py```
 
 #### Keyboard intructions
-Z,X,C   -- count object(Red, Green, Blue respectiveley)  
+Z,X,C   -- count object (different colors)  
 &nbsp;&nbsp;&nbsp;V&nbsp;&nbsp;&nbsp;   -- cover black mask  
 &nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAY!!**  
 &nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
