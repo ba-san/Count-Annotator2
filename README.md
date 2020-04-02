@@ -66,17 +66,21 @@ folder = "pocari-cm.mp4" #input images in this directory
 2.run by ``` python annotation.py```
 
 #### Keyboard intructions
-X,C,V   -- count object(Red, Green, Blue respectiveley)  
-&nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
+Z,X,C   -- count object(Red, Green, Blue respectiveley)  
+&nbsp;&nbsp;&nbsp;V&nbsp;&nbsp;&nbsp;   -- cover black mask  
+&nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
 &nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
+&nbsp;&nbsp;&nbsp;D&nbsp;&nbsp;&nbsp;   -- delete nearest mask  
+&nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- delete white point  
 &nbsp;&nbsp;&nbsp;G&nbsp;&nbsp;&nbsp;   -- show/remove grid  
-&nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- fix y-cordinate of red box  
+&nbsp;&nbsp;&nbsp;H&nbsp;&nbsp;&nbsp;   -- fix y-cordinate of red box  
 &nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;   -- refer to original/denoised image (some functions cannot be used while this mode)  
-&nbsp;&nbsp;&nbsp;P&nbsp;&nbsp;&nbsp;   -- show histgram-equalized image  
-&nbsp;&nbsp;&nbsp;R&nbsp;&nbsp;&nbsp;   -- make image sharp  
+&nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- show histgram-equalized image  
+&nbsp;&nbsp;&nbsp;Y&nbsp;&nbsp;&nbsp;   -- make image sharp  
 I,J,K,N-- move pointer up, left, right, down respectively  
-&nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
-Enter(and Y)-- go to next image  
+&nbsp;&nbsp;&nbsp;A,S  -- make circle smaller/bigger  
+&nbsp;&nbsp;&nbsp;Q,W  -- make window smaller/bigger  
+Enter(and N)-- go to next image  
 
 ### 2. Double checking
 You must go through this section to crop image.  
@@ -92,14 +96,7 @@ folder = "pocari-cm.mp4" # must be "OO_output"
 2. run by ``` python checker.py```  
 
 #### Keyboard intructions
-X,C,V   -- count object(Red, Green, Blue respectiveley)  
-&nbsp;&nbsp;&nbsp;E&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAYS!!**  
-&nbsp;&nbsp;&nbsp;F&nbsp;&nbsp;&nbsp;   -- delete nearest point  
-&nbsp;&nbsp;&nbsp;G&nbsp;&nbsp;&nbsp;   -- show/remove grid  
-&nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- fix y-cordinate of red box  
-I,J,K,N-- move pointer up, left, right, down respectively  
-&nbsp;&nbsp;&nbsp;S,D  -- make circle smaller/bigger  
-Enter(and Y)-- go to next image (directory's name will be changed.)   
+Refer above.  
 
 ### 3. Cropping
 0.check each img's path inside csv is correct.  
