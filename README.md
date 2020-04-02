@@ -80,7 +80,7 @@ Z,X,C   -- count object (different colors)
 I,J,K,M-- move pointer up, left, right, down respectively  
 &nbsp;&nbsp;&nbsp;A,S  -- make circle smaller/bigger  
 &nbsp;&nbsp;&nbsp;Q,W  -- make window smaller/bigger  
-Enter(and N)-- go to next image  
+Enter(and N)-- move to next image  
 
 ### 2. Double checking
 You must go through this section to crop image.  
