@@ -11,7 +11,7 @@ files=glob.glob(PWD + folder + "/*")
 path = PWD + folder + "_output"
 csvpath = os.path.join(path, folder) + ".csv"
 
-global dis_x, dis_y, outer_circle, box_size
+global dis_x, dis_y, outer_circle, box_size, center_white
 resume = 1 # 0 is new, 1 is resume. Don't change this number. this is only for annotation (not for checker)
 successive_new_frame = LAST_item_cnt = 0
 dis_x = dis_y = box_size = 0
@@ -22,6 +22,7 @@ rectangle_thickness = 2
 circle_thickness = 2
 grid_thickness = 2
 denoise = True
+center_white = True
 show_count = False
 
 ## https://note.nkmk.me/python-opencv-hconcat-vconcat-np-tile/
@@ -31,13 +32,13 @@ def hconcat_resize_min(im_list, interpolation=cv2.INTER_CUBIC):
     return cv2.hconcat(im_list_resize)
 
 def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname):
-	#drag = cv2.rectangle(drag, (start_x+box_size, start_y+box_size), (end_x-box_size, end_y-box_size), (0, 0, 255), thickness=rectangle_thickness)
 	drag = cv2.rectangle(drag, (start_x, start_y), (end_x, end_y), (0, 0, 255), thickness=rectangle_thickness)
 	cv2.imshow(fname, drag)
 	enlarged = cv2.resize(drag[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
 	initenlarged = cv2.resize(initimg[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
 	initenlarged = cv2.circle(initenlarged, (300, 300),  outer_circle, (0, 0, 255), circle_thickness)
-	initenlarged = cv2.circle(initenlarged, (300, 300), 1, (255, 255, 255), -1)
+	if center_white == True:
+		initenlarged = cv2.circle(initenlarged, (300, 300), 1, (255, 255, 255), -1)
 	rightimg = cv2.vconcat([enlarged, initenlarged])
 	fullimg = hconcat_resize_min([drag,rightimg])
 	cv2.imshow(fname, fullimg)
@@ -55,8 +56,7 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_proce
 			min_hist_y, max_hist_y = min(hist_br_y, hist_ul_y), max(hist_br_y, hist_ul_y)
 		for j in range(3):
 			drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j] = cv2.equalizeHist(drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j])  # equalize for each channel
-		drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x] = cv2.cvtColor(drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, :], cv2.COLOR_BGR2RGB) # for general equilization
-	
+			
 	## mask
 	global mask_ul_x, mask_ul_y, mask_br_x, mask_br_y, min_mask_x, max_mask_x, min_mask_y, max_mask_y, mask_csv_path
 	if image_process_check['mask'] == 0:
@@ -88,32 +88,32 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_proce
 			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=grid_thickness)
 			
 	drag = cv2.circle(drag, (dis_x, dis_y),  outer_circle, (0, 0, 255), circle_thickness)
-	drag = cv2.circle(drag, (dis_x, dis_y), 1, (255, 255, 255), -1)
-	print(dis_x, dis_y, box_size)
+	if center_white == True:
+		drag = cv2.circle(drag, (dis_x, dis_y), 1, (255, 255, 255), -1)
 	
-	if dis_y-150-box_size <= 0 and 0 <= dis_x-150 and dis_x+150 <= width: #upper
-		inside_discriminator(drag, initimg, dis_x-150+box_size, 0+box_size, dis_x+150-box_size, 300-box_size, fname)
+	if dis_y-150+box_size <= 0 and 0 <= dis_x-150+box_size and dis_x+150-box_size <= width: #upper
+		inside_discriminator(drag, initimg, dis_x-150+box_size, 0, dis_x+150-box_size, 300-2*box_size, fname)
 		
-	elif dis_x-150 <= 0 and 0 <= dis_y-150 and dis_y+150 <= height: #left
-		inside_discriminator(drag, initimg, 0+box_size, dis_y-150+box_size, 300-box_size, dis_y+150-box_size, fname)
+	elif dis_x-150+box_size <= 0 and 0 <= dis_y-150+box_size and dis_y+150-box_size <= height: #left
+		inside_discriminator(drag, initimg, 0, dis_y-150+box_size, 300-2*box_size, dis_y+150-box_size, fname)
 		
-	elif dis_y+150 >= height and 0 <= dis_x-150 and dis_x+150 <= width: #bottom
-		inside_discriminator(drag, initimg, dis_x-150+box_size, height-300+box_size, dis_x+150-box_size, height-box_size, fname)
+	elif dis_y+150-box_size >= height and 0 <= dis_x-150+box_size and dis_x+150-box_size <= width: #bottom
+		inside_discriminator(drag, initimg, dis_x-150+box_size, height-300+2*box_size, dis_x+150-box_size, height, fname)
 		
-	elif dis_x+150 >= width and 0 <= dis_y-150 and dis_y+150 <= height: #right
-		inside_discriminator(drag, initimg, width-300+box_size, dis_y-150+box_size, width-box_size, dis_y+150-box_size, fname)
+	elif dis_x+150-box_size >= width and 0 <= dis_y-150+box_size and dis_y+150-box_size <= height: #right
+		inside_discriminator(drag, initimg, width-300+2*box_size, dis_y-150+box_size, width, dis_y+150-box_size, fname)
 		
-	elif dis_y-150 <= 0 and dis_x-150 <= 0: #upper left
-		inside_discriminator(drag, initimg, 0+box_size, 0+box_size, 300-box_size, 300-box_size, fname)
+	elif dis_y-150+box_size <= 0 and dis_x-150+box_size <= 0: #upper left
+		inside_discriminator(drag, initimg, 0, 0, 300-2*box_size, 300-2*box_size, fname)
 		
-	elif dis_y-150 <= 0 and dis_x+150 >= width: #upper right
-		inside_discriminator(drag, initimg, width-300+box_size, 0+box_size, width-box_size, 300-box_size, fname)
+	elif dis_y-150+box_size <= 0 and dis_x+150-box_size >= width: #upper right
+		inside_discriminator(drag, initimg, width-300+2*box_size, 0, width, 300-2*box_size, fname)
 		
-	elif dis_y+150 >= height and dis_x-150 <= 0: #bottom left
-		inside_discriminator(drag, initimg, 0+box_size, height-300+box_size, 300-box_size, height-box_size, fname)
+	elif dis_y+150-box_size >= height and dis_x-150+box_size <= 0: #bottom left
+		inside_discriminator(drag, initimg, 0, height-300+2*box_size, 300-2*box_size, height, fname)
 		
-	elif dis_y+150 >= height and dis_x+150 >= width: #bottom right
-		inside_discriminator(drag, initimg, width-300+box_size, height-300+box_size, width-box_size, height-box_size, fname)
+	elif dis_y+150-box_size >= height and dis_x+150-box_size >= width: #bottom right
+		inside_discriminator(drag, initimg, width-300+2*box_size, height-300+2*box_size, width, height, fname)
 		
 	else:
 		inside_discriminator(drag, initimg, dis_x-150+box_size, dis_y-150+box_size, dis_x+150-box_size, dis_y+150-box_size, fname)
@@ -403,14 +403,17 @@ if __name__ == '__main__':
 					outer_circle = outer_circle + 1
 					
 				elif k==113: #input 'q'
-					box_size = box_size - 1
+					box_size = box_size - 2
 					
 				elif k==119: #input 'w'
-					box_size = box_size + 1
+					box_size = box_size + 2 if box_size < 145 else box_size
 					
 				## fix x-axis
 				elif k==104: #input 'h'
 					x_fix = - x_fix
+					
+				elif k==101: # input 'e'
+					center_white = not center_white
 					
 				## refer to original image or denoise image
 				elif k==116: #input 't'
