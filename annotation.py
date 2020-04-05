@@ -1,3 +1,4 @@
+### v2 has cover/remove mask functions ###
 import os, copy
 import cv2, csv, glob
 import linecache, shutil
@@ -6,7 +7,8 @@ import numpy as np
 from tqdm import tqdm
 
 folder = "crowd_night_annotation" #input images in this directory
-PWD = os.getcwd() + "/"
+PWD = os.getcwd() + "/" # for linux
+#PWD = os.getcwd() + "\\" # for windows
 files=glob.glob(PWD + folder + "/*")
 path = PWD + folder + "_output"
 csvpath = os.path.join(path, folder) + ".csv"
@@ -43,7 +45,7 @@ def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname):
 	fullimg = hconcat_resize_min([drag,rightimg])
 	cv2.imshow(fname, fullimg)
 
-def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_process_check):
+def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, mask_csv_path, image_process_check):
 	## hist
 	global hist_ul_x, hist_ul_y, hist_br_x, hist_br_y, min_hist_x, max_hist_x, min_hist_y, max_hist_y
 	if image_process_check['hist'] == 0:
@@ -58,7 +60,7 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_proce
 			drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j] = cv2.equalizeHist(drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j])  # equalize for each channel
 			
 	## mask
-	global mask_ul_x, mask_ul_y, mask_br_x, mask_br_y, min_mask_x, max_mask_x, min_mask_y, max_mask_y, mask_csv_path
+	global mask_ul_x, mask_ul_y, mask_br_x, mask_br_y, min_mask_x, max_mask_x, min_mask_y, max_mask_y
 	if image_process_check['mask'] == 0:
 		mask_ul_x, mask_ul_y = dis_x, dis_y
 	else:
@@ -86,7 +88,7 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_proce
 			drag = cv2.line(drag,(i,0),(i,drag.shape[0]),(102,140,58),thickness=grid_thickness)
 		for j in range(0, drag.shape[0], 300):
 			drag = cv2.line(drag,(0,j),(drag.shape[1],j),(102,140,58),thickness=grid_thickness)
-			
+	
 	drag = cv2.circle(drag, (dis_x, dis_y),  outer_circle, (0, 0, 255), circle_thickness)
 	if center_white == True:
 		drag = cv2.circle(drag, (dis_x, dis_y), 1, (255, 255, 255), -1)
@@ -141,7 +143,7 @@ def delete_nearest_pt(csvpath, path, fname):
 	os.remove(croppeddir + "/LAST/" + str(csvimgcnt) + ".jpg")
 	iteration = csvimgcnt-int(num)
 	
-	for i in range(1, iteration+1, 1):
+	for i in range(1, iteration+1, 1): #this two loops should be one. future work
 		recov = cv2.imread(croppeddir + "/LAST/"+str(int(num)-1)+".jpg")
 		df = pd.read_csv(csvpath, index_col=0)
 		for j in range(1, i+1, 1):
@@ -192,11 +194,11 @@ def move(dx, dy, img, fname, initimg):
 	dis_x, dis_y = dis_x+dx, dis_y+dy
 	drag = copy.copy(img)
 	drag = cv2.rectangle(drag, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
-	discriminator(initimg, dis_x, dis_y, drag, fname, img.shape[0], img.shape[1], image_process_check)
+	discriminator(initimg, dis_x, dis_y, drag, fname, img.shape[0], img.shape[1], mask_csv_path, image_process_check)
 
 def dragging(event, x, y, flags, param):
+	initimg, height, width, mask_csv_path, image_process_check, img, fname, path, x_fix = param
 	global dis_x, dis_y
-	initimg, height, width, img, fname, path, x_fix = param
 	
 	if initimg.shape[0]>1200.0: #shape[0] is height
 		dis_x = int(x * (initimg.shape[0]/1200.0))
@@ -209,8 +211,7 @@ def dragging(event, x, y, flags, param):
 	drag = cv2.rectangle(drag, (50, 50), (width-50, height-50), (40, 61, 20), thickness=2)
 	
 	if event == cv2.EVENT_MOUSEMOVE:
-		discriminator(initimg, dis_x, dis_y, drag, fname, height, width, image_process_check)
-
+		discriminator(initimg, dis_x, dis_y, drag, fname, height, width, mask_csv_path, image_process_check)
 
 def initial_frame_setting(croppeddir, fname, img): # only for annotation (not for checker)
 	if not os.path.exists(croppeddir):
@@ -221,7 +222,6 @@ def initial_frame_setting(croppeddir, fname, img): # only for annotation (not fo
 		mask_csv = pd.DataFrame(columns=['min_mask_x', 'max_mask_x', 'min_mask_y', 'max_mask_y'])
 		mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(fname) + ".csv"))
 	cv2.imwrite(croppeddir + "/LAST/0.jpg", img)
-
 
 if __name__ == '__main__':
 	if not os.path.exists(path): # only for annotation (not for checker)
@@ -272,7 +272,7 @@ if __name__ == '__main__':
 			cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
 			cv2.imshow(fname, img)
 			
-			cv2.setMouseCallback(fname, dragging, [initimg, img.shape[0], img.shape[1], img, fname, path, x_fix])
+			cv2.setMouseCallback(fname, dragging, [initimg, img.shape[0], img.shape[1], mask_csv_path, image_process_check, img, fname, path, x_fix])
 			
 			while True:
 				k = cv2.waitKey(0) # waiting input
@@ -332,6 +332,7 @@ if __name__ == '__main__':
 					## go next image
 					elif k==110 and end > 0: # 'n'
 						end = 0
+						cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname[:-4])) + "_annotated.jpg", img)
 						df = pd.read_csv(mask_csv_path, index_col=0)
 						for i in range(len(df)):
 							recov_min_mask_x, recov_max_mask_x = df.loc[i, 'min_mask_x'], df.loc[i, 'max_mask_x']
@@ -391,7 +392,7 @@ if __name__ == '__main__':
 					
 				elif k==107: #input k
 					move(1, 0, img, fname, initimg)
-					
+				
 				elif k==109: #input m
 					move(0, 1, img, fname, initimg)
 					
@@ -440,7 +441,7 @@ if __name__ == '__main__':
 						print('Cancelled.')
 						end = 0
 				
-				cv2.setMouseCallback(fname, dragging, [initimg, img.shape[0], img.shape[1], img, fname, path, x_fix])
+				cv2.setMouseCallback(fname, dragging, [initimg, img.shape[0], img.shape[1], mask_csv_path, image_process_check, img, fname, path, x_fix])
 			
 			## for annotation (not for checker)
 			successive_new_frame = 1
