@@ -21,10 +21,10 @@ dis_x = dis_y = box_size = 0
 ## parameters ##
 outer_circle = 10
 rectangle_thickness = 2
-circle_thickness = 2
+circle_thickness = 1
 grid_thickness = 2
 denoise = True
-center_white = True
+center_white = False
 show_count = False
 
 ## https://note.nkmk.me/python-opencv-hconcat-vconcat-np-tile/
@@ -46,18 +46,23 @@ def inside_discriminator(drag, initimg, start_x, start_y, end_x, end_y, fname):
 	cv2.imshow(fname, fullimg)
 
 def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, mask_csv_path, image_process_check):
-	## hist
+	## hist partial
 	global hist_ul_x, hist_ul_y, hist_br_x, hist_br_y, min_hist_x, max_hist_x, min_hist_y, max_hist_y
-	if image_process_check['hist'] == 0:
+	if image_process_check['hist_partial'] == 0:
 		hist_ul_x, hist_ul_y = dis_x, dis_y
 	else:
-		if image_process_check['hist'] == 1:
+		if image_process_check['hist_partial'] == 1:
 			drag = cv2.circle(drag, (hist_ul_x, hist_ul_y), 1, (255, 255, 255), 3)
 			hist_br_x, hist_br_y = dis_x, dis_y
 			min_hist_x, max_hist_x = min(hist_br_x, hist_ul_x), max(hist_br_x, hist_ul_x)
 			min_hist_y, max_hist_y = min(hist_br_y, hist_ul_y), max(hist_br_y, hist_ul_y)
 		for j in range(3):
 			drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j] = cv2.equalizeHist(drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j])  # equalize for each channel
+			
+	## hist all
+	if image_process_check['hist_all'] == 1:
+		for j in range(3):
+			drag[:, :, j] = cv2.equalizeHist(drag[:, :, j])  # equalize for each channel
 			
 	## mask
 	global mask_ul_x, mask_ul_y, mask_br_x, mask_br_y, min_mask_x, max_mask_x, min_mask_y, max_mask_y
@@ -120,8 +125,9 @@ def discriminator(initimg, dis_x, dis_y, drag, fname, height, width, mask_csv_pa
 	else:
 		inside_discriminator(drag, initimg, dis_x-150+box_size, dis_y-150+box_size, dis_x+150-box_size, dis_y+150-box_size, fname)
 	
-def delete_nearest_pt(csvpath, path, fname):
+def delete_nearest_pt(csvpath, path, fname, windowname):
 	global img
+	deletedir = os.path.dirname(fname) + "_output/" + os.path.basename(fname)
 	csvimgcnt = row = start_of_newimg_index = lowest_i = 0
 	dist = 999999999999
 	df = pd.read_csv(csvpath, index_col=0)
@@ -139,12 +145,11 @@ def delete_nearest_pt(csvpath, path, fname):
 	df = df.drop(lowest_i, axis = 0)
 	df = df.reset_index(drop=True)
 	df.to_csv(csvpath)
-	
-	os.remove(croppeddir + "/LAST/" + str(csvimgcnt) + ".jpg")
+	os.remove(deletedir + "/LAST/" + str(csvimgcnt) + ".jpg")
 	iteration = csvimgcnt-int(num)
 	
 	for i in range(1, iteration+1, 1): #this two loops should be one. future work
-		recov = cv2.imread(croppeddir + "/LAST/"+str(int(num)-1)+".jpg")
+		recov = cv2.imread(deletedir + "/LAST/"+str(int(num)-1)+".jpg")
 		df = pd.read_csv(csvpath, index_col=0)
 		for j in range(1, i+1, 1):
 			recov_x, recov_y = df.loc[start_of_newimg_index+j+int(num)-2, 'x'], df.loc[start_of_newimg_index+j+int(num)-2, 'y']
@@ -162,17 +167,21 @@ def delete_nearest_pt(csvpath, path, fname):
 			if (show_count):
 				recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
 				recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
-		cv2.imwrite(croppeddir+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)
+		cv2.imwrite(deletedir+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)
 	
-	img = cv2.imread(croppeddir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
-	cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
-	cv2.imshow(fname, img)
+	img = cv2.imread(deletedir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
+	print(deletedir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
 	
-	with open(croppeddir + "/frame_people_count.txt") as f:
+	cv2.namedWindow(windowname, cv2.WINDOW_NORMAL)
+	cv2.imshow(windowname, img)
+	
+	with open(deletedir + "/frame_people_count.txt") as f:
 		frm_ppl_cnt = f.read()
 	frm_ppl_cnt = int(frm_ppl_cnt)
-	with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
+	with open(deletedir + "/frame_people_count.txt", mode='w') as f:
 		f.write(str(frm_ppl_cnt-1))
+	
+	return img
 
 def delete_nearest_mask(mask_csv_path):
 	lowest_i = 0
@@ -212,6 +221,8 @@ def dragging(event, x, y, flags, param):
 	
 	if event == cv2.EVENT_MOUSEMOVE:
 		discriminator(initimg, dis_x, dis_y, drag, fname, height, width, mask_csv_path, image_process_check)
+	
+	return dis_x, dis_y
 
 def initial_frame_setting(croppeddir, fname, img): # only for annotation (not for checker)
 	if not os.path.exists(croppeddir):
@@ -234,7 +245,7 @@ if __name__ == '__main__':
 		frm_ppl_cnt = 1 #frame people count
 		break_check = img_denoised = 0
 		global image_process_check, x_fix, locked, min_mask_x, max_mask_x, min_mask_y, max_mask_y, mask_csv_path
-		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist': 0, 'mask': 0}
+		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist_all': -1, 'hist_partial': 0, 'mask': 0}
 		locked = -1
 		x_fix = 1
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
@@ -343,14 +354,14 @@ if __name__ == '__main__':
 						break
 						
 					## delete nearest point
-					elif k==102: #input 'f'
+					elif k==118: #input 'v'
 						try:
-							delete_nearest_pt(csvpath, path, fname)
+							img = delete_nearest_pt(csvpath, path, fname, fname)
 						except:
 							pass
 						
 					## black mask
-					elif k==118: #input 'v'
+					elif k==100: # input 'd'
 						image_process_check['mask'] = (image_process_check['mask']+1)%2
 						
 						if image_process_check['mask']==0:
@@ -359,7 +370,7 @@ if __name__ == '__main__':
 							mask_csv = mask_csv.append(series, ignore_index=True)
 							mask_csv.to_csv(mask_csv_path)
 							
-					elif k==100: # input 'd'
+					elif k==102: #input 'f'
 						try:
 							delete_nearest_mask(mask_csv_path)
 						except:
@@ -376,12 +387,16 @@ if __name__ == '__main__':
 					image_process_check['grid_binary'] = -image_process_check['grid_binary']
 					
 				## make it sharp (unsharpmasking)
-				elif k==121: #input 'y'
+				elif k==116: #input 't'
 					image_process_check['sharp'] = -image_process_check['sharp']
 					
-				## hist
+				## hist partial
 				elif k==117: #input 'u'
-					image_process_check['hist'] = (image_process_check['hist']+1)%3
+					image_process_check['hist_partial'] = (image_process_check['hist_partial']+1)%3
+					
+				## hist all
+				elif k==121: #input 'y'
+					image_process_check['hist_all'] = -image_process_check['hist_all']
 					
 				## move position by keyboard 
 				elif k==105: #input i
@@ -417,7 +432,7 @@ if __name__ == '__main__':
 					center_white = not center_white
 					
 				## refer to original image or denoise image
-				elif k==116: #input 't'
+				elif k==114: #input 'r'
 					locked = - locked
 					if locked == 1: # when get locked
 						img_saved = img
