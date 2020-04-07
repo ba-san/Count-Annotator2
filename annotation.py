@@ -19,7 +19,7 @@ if __name__ == '__main__':
 	grid_thickness = 2
 	denoise = True
 	center_white = False
-	show_count = True
+	show_count = False
 	##########################
 	
 	exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
