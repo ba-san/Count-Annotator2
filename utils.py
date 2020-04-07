@@ -311,7 +311,7 @@ class Annotation:
 			
 		elif k==97: #input 'a'
 			self.outer_circle = self.outer_circle - 1
-			self.outer_circle = 1 if self.outer_circle == 0 else self.outer_circle
+			self.outer_circle = 6 if self.outer_circle == 5 else self.outer_circle
 			
 		elif k==115: #input 's'
 			self.outer_circle = self.outer_circle + 1
