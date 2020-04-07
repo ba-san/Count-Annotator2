@@ -413,7 +413,7 @@ if __name__ == '__main__':
 					
 				elif k==97: #input 'a'
 					outer_circle = outer_circle - 1
-					outer_circle = 1 if outer_circle == 0 else outer_circle
+					outer_circle = 6 if outer_circle == 5 else outer_circle
 					
 				elif k==115: #input 's'
 					outer_circle = outer_circle + 1
