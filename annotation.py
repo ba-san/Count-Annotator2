@@ -22,8 +22,6 @@ if __name__ == '__main__':
 	show_count = False
 	##########################
 	
-	exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
-	
 	if not os.path.exists(path): # only for annotation (not for checker)
 		os.makedirs(path)
 		df = pd.DataFrame(columns=['image', 'x', 'y', 'color', 'outer_circle'])
@@ -31,38 +29,52 @@ if __name__ == '__main__':
 		resume = 0
 		
 	for fname in files:
+		print(fname)
+		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
 		frm_ppl_cnt = 1 #frame people count
 		break_check = 0
 		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist_all': -1, 'hist_partial': 0, 'mask': 0}
 		locked = -1
 		x_fix = 1
+		pending_1st_time = True
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		croppeddir=os.path.join(path, os.path.basename(fname))
 		exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
 		
+		
 		if resume == 1: # too deep nest.
+			if bool(glob.glob(croppeddir + "_pending")):
+				print('this is pended image.')
+				pending_1st_time = False
+				croppeddir = croppeddir + "_pending"
+				fname = fname + "_pending"
+				exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
+				
 			if successive_new_frame == 0:
 				for left in glob.glob(path + '/*'):
 					if os.path.basename(left) == os.path.basename(fname):
-						if bool(glob.glob(croppeddir + "/*annotated.jpg")):
+						if bool(glob.glob(croppeddir + "/*annotated.jpg")): # already annotated
 							break_check = 1
 							break
 					elif os.path.basename(fname) + "_cropped" == os.path.basename(left) or os.path.basename(fname) + "_checked" == os.path.basename(left):
 						break_check = 1
 						break
-						
+				
 			successive_new_frame = 0
-			
 			LAST_item_cnt = 0
+			
 			for i in glob.glob(croppeddir + "/LAST/*"):
 				LAST_item_cnt+=1
+				
+			print(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
 			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
-			
 		else:
 			img = cv2.imread(fname)
 			exe.initial_frame_setting(croppeddir, fname, img)
 			
+			
 		if break_check==0:
+			
 			end = 0
 			
 			exe.initial_frame_setting(croppeddir, fname, img) if successive_new_frame == 1 else None
@@ -80,7 +92,7 @@ if __name__ == '__main__':
 				if locked == -1:
 					## check object
 					if k==122 or k==120 or k==99: # input 'z', 'x' or 'c'
-						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, fname)
+						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath)
 						
 					## ask to move to the next image
 					elif k==13: #enter key
@@ -123,6 +135,15 @@ if __name__ == '__main__':
 						except:
 							pass
 							
+					elif k==112: #input 'p'
+						if pending_1st_time:
+							df = pd.read_csv(csvpath, index_col=0)
+							df = df.replace(croppeddir, croppeddir + "_pending")
+							df.to_csv(csvpath)
+							os.rename(exe.mask_csv_path, exe.mask_csv_path[:-4] + "_pending.csv")
+							os.rename(croppeddir, croppeddir + "_pending")
+						break
+						
 				img, image_process_check, x_fix, end, locked = exe.minor_functions(k, initimg, img, fname, image_process_check, x_fix, end, locked)
 				
 				cv2.setMouseCallback(fname, exe.dragging, [initimg, img, image_process_check, fname, path, x_fix])
