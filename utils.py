@@ -124,7 +124,7 @@ class Annotation:
 		else:
 			self.inside_discriminator(drag, initimg, self.dis_x-150+self.box_size, self.dis_y-150+self.box_size, self.dis_x+150-self.box_size, self.dis_y+150-self.box_size, fname)
 		
-	def check_pnt(self, img, k, resume, csvcurrentimg, croppeddir, csvpath, path, fname):
+	def check_pnt(self, img, k, resume, csvcurrentimg, croppeddir, csvpath):
 		with open(croppeddir + "/frame_people_count.txt") as f:
 			frm_ppl_cnt = f.read()
 		
@@ -149,14 +149,14 @@ class Annotation:
 		
 		with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
 			f.write(str(frm_ppl_cnt))
-			
+		
 		df = pd.read_csv(csvpath, index_col=0)
 		if k==120:
-			series = pd.Series([os.path.join(path, os.path.basename(fname)), self.dis_x, self.dis_y, 'r', self.outer_circle], index=df.columns)
+			series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'r', self.outer_circle], index=df.columns)
 		elif k==99:
-			series = pd.Series([os.path.join(path, os.path.basename(fname)), self.dis_x, self.dis_y, 'g', self.outer_circle], index=df.columns)
+			series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'g', self.outer_circle], index=df.columns)
 		elif k==122:
-			series = pd.Series([os.path.join(path, os.path.basename(fname)), self.dis_x, self.dis_y, 'b', self.outer_circle], index=df.columns)
+			series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'b', self.outer_circle], index=df.columns)
 		
 		df = df.append(series, ignore_index=True)
 		
@@ -168,7 +168,7 @@ class Annotation:
 			cv2.imwrite(croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg", img)
 		else:
 			cv2.imwrite(croppeddir + "/LAST/" + str(lastrow - csvcurrentimg) + ".jpg", img)
-			
+		
 	def delete_nearest_pt(self, img, csvpath, path, fname, windowname):
 		deletedir = os.path.dirname(fname) + "_output/" + os.path.basename(fname)
 		csvimgcnt = row = start_of_newimg_index = lowest_i = 0
@@ -340,8 +340,7 @@ class Annotation:
 				if self.denoise == True:
 					if isinstance(self.img_denoised, int): # when not defined
 						self.img_denoised = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
-					else: # already defined
-						img = self.img_denoised
+					img = self.img_denoised
 				else:
 					img = self.img_saved
 					
@@ -376,7 +375,7 @@ class Checker(Annotation):
 		
 		return df
 		
-	def check_pnt(self, img, k, csvcurrentimg, croppeddir, csvpath, path):
+	def check_pnt(self, img, k, csvcurrentimg, croppeddir, csvpath, path): # path may not be needed?
 		with open(croppeddir + "/frame_people_count.txt") as f:
 			frm_ppl_cnt = f.read()
 		
