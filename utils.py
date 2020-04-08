@@ -37,6 +37,7 @@ class Annotation:
 		initenlarged = cv2.resize(initimg[start_y + 2:end_y - 1, start_x + 2: end_x - 1], (600,600))
 		initenlarged = cv2.circle(initenlarged, (300, 300),  self.outer_circle, (0, 0, 255), self.circle_thickness)
 		if self.center_white == True:
+			initenlarged = cv2.circle(initenlarged, (300, 300), 3, (0, 0, 0), -1)
 			initenlarged = cv2.circle(initenlarged, (300, 300), 1, (255, 255, 255), -1)
 		rightimg = cv2.vconcat([enlarged, initenlarged])
 		fullimg = self.hconcat_resize_min([drag,rightimg])
@@ -95,6 +96,9 @@ class Annotation:
 		
 		drag = cv2.circle(drag, (self.dis_x, self.dis_y),  self.outer_circle, (0, 0, 255), self.circle_thickness)
 		if self.center_white == True:
+			drag = cv2.line(drag,(self.dis_x,0),(self.dis_x,drag.shape[0]),(0,204,255),thickness=self.grid_thickness)
+			drag = cv2.line(drag,(0,self.dis_y),(drag.shape[1],self.dis_y),(0,204,255),thickness=self.grid_thickness)
+			drag = cv2.circle(drag, (self.dis_x, self.dis_y), 3, (0, 0, 0), -1)
 			drag = cv2.circle(drag, (self.dis_x, self.dis_y), 1, (255, 255, 255), -1)
 			
 		if self.dis_y-150+self.box_size <= 0 and 0 <= self.dis_x-150+self.box_size and self.dis_x+150-self.box_size <= width: #upper
