@@ -24,6 +24,25 @@ class Annotation:
 		self.img_saved = 0
 		self.img_denoised = 0
 		
+	## https://www.geeksforgeeks.org/insert-row-at-given-position-in-pandas-dataframe/
+	# Function to insert row in the dataframe. this is only for checker
+	def Insert_row(self, row_number, df, row_value):
+		start_upper = 0
+		end_upper = row_number
+		start_lower = row_number
+		end_lower = df.shape[0]
+		
+		upper_half = [*range(start_upper, end_upper, 1)]
+		lower_half = [*range(start_lower, end_lower, 1)]
+		lower_half = [x.__add__(1) for x in lower_half]
+		index_ = upper_half + lower_half
+		
+		df.index = index_
+		df.loc[row_number] = row_value
+		df = df.sort_index()
+		
+		return df
+		
 	## https://note.nkmk.me/python-opencv-hconcat-vconcat-np-tile/
 	def hconcat_resize_min(self, im_list, interpolation=cv2.INTER_CUBIC):
 		h_min = min(im.shape[0] for im in im_list)
@@ -128,7 +147,7 @@ class Annotation:
 		else:
 			self.inside_discriminator(drag, initimg, self.dis_x-150+self.box_size, self.dis_y-150+self.box_size, self.dis_x+150-self.box_size, self.dis_y+150-self.box_size, fname)
 		
-	def check_pnt(self, img, k, resume, csvcurrentimg, croppeddir, csvpath):
+	def check_pnt(self, img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker):
 		with open(croppeddir + "/frame_people_count.txt") as f:
 			frm_ppl_cnt = f.read()
 		
@@ -153,22 +172,40 @@ class Annotation:
 		
 		with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
 			f.write(str(frm_ppl_cnt))
-		
+			
+		if not annotation_checker:
+			row = 0
+			df = pd.read_csv(csvpath, index_col=0)
+			for i in range(len(df)):
+				if df.loc[i, 'image'] == os.path.join(path, os.path.basename(croppeddir)):
+					row=i
+					
 		df = pd.read_csv(csvpath, index_col=0)
 		if k==120:
-			series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'r', self.outer_circle], index=df.columns)
+			if annotaion_checker:
+				series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'r', self.outer_circle], index=df.columns)
+			else:
+				df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'r', self.outer_circle])
 		elif k==99:
-			series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'g', self.outer_circle], index=df.columns)
+			if annotation_checker:
+				series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'g', self.outer_circle], index=df.columns)
+			else:
+				df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'g', self.outer_circle])
 		elif k==122:
-			series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'b', self.outer_circle], index=df.columns)
-		
-		df = df.append(series, ignore_index=True)
+			if annotation_checker:
+				series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'b', self.outer_circle], index=df.columns)
+			else:
+				df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'b', self.outer_circle])
+				
+		if annotation_checker:
+			df = df.append(series, ignore_index=True)  # only annotaion
 		
 		df.to_csv(csvpath)
-		if resume == 1:
+		if resume == 1 or annotation_checker==False: # for checkr also
 			LAST_item_cnt = 0
-			for i in glob.glob(croppeddir + "/LAST/*"):
+			for i in glob.glob(croppeddir + "/LAST/*[0-9]*"):
 				LAST_item_cnt+=1
+			print("saved: " + croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg")
 			cv2.imwrite(croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg", img)
 		else:
 			cv2.imwrite(croppeddir + "/LAST/" + str(lastrow - csvcurrentimg) + ".jpg", img)
@@ -186,6 +223,9 @@ class Annotation:
 					lowest_i = i
 				csvimgcnt+=1
 				row=i
+				
+		if csvimgcnt==0:
+			return img
 		
 		start_of_newimg_index = row - csvimgcnt + 1
 		num = lowest_i + 1 - start_of_newimg_index
@@ -357,71 +397,3 @@ class Annotation:
 				end = 0
 		
 		return img, image_process_check, x_fix, end, locked
-
-
-class Checker(Annotation):
-	## https://www.geeksforgeeks.org/insert-row-at-given-position-in-pandas-dataframe/
-	# Function to insert row in the dataframe. this is only for checker
-	def Insert_row(self, row_number, df, row_value):
-		start_upper = 0
-		end_upper = row_number
-		start_lower = row_number
-		end_lower = df.shape[0]
-		
-		upper_half = [*range(start_upper, end_upper, 1)]
-		lower_half = [*range(start_lower, end_lower, 1)]
-		lower_half = [x.__add__(1) for x in lower_half]
-		index_ = upper_half + lower_half
-		
-		df.index = index_
-		df.loc[row_number] = row_value
-		df = df.sort_index()
-		
-		return df
-		
-	def check_pnt(self, img, k, csvcurrentimg, croppeddir, csvpath, path): # path may not be needed?
-		with open(croppeddir + "/frame_people_count.txt") as f:
-			frm_ppl_cnt = f.read()
-		
-		lastrow = sum(1 for i in open(csvpath))
-		
-		if k==120: #red
-			img = cv2.circle(img, (self.dis_x, self.dis_y), self.outer_circle, (0, 0, 255), self.circle_thickness)
-		elif k==99: #green
-			img = cv2.circle(img, (self.dis_x, self.dis_y), self.outer_circle, (0, 255, 0), self.circle_thickness)
-		elif k==122: #blue
-			img = cv2.circle(img, (self.dis_x, self.dis_y), self.outer_circle, (255, 0, 0), self.circle_thickness)
-		
-		img = cv2.circle(img, (self.dis_x, self.dis_y), 1, (255, 255, 255), -1)
-		if (self.show_count):
-			img = cv2.putText(img, str(frm_ppl_cnt), (self.dis_x-10,self.dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-			img = cv2.putText(img, str(frm_ppl_cnt), (self.dis_x-10,self.dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
-		img = cv2.rectangle(img, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
-		
-		print('You have counted {} people in this directory.\nThis time, you have counted {} people. Press B to stop.'.format(lastrow, frm_ppl_cnt))
-		frm_ppl_cnt = int(frm_ppl_cnt)
-		frm_ppl_cnt+=1
-		
-		with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
-			f.write(str(frm_ppl_cnt))
-			
-		row = 0
-		df = pd.read_csv(csvpath, index_col=0)
-		for i in range(len(df)):
-			if df.loc[i, 'image'] == os.path.join(path, os.path.basename(croppeddir)):
-				row=i
-		
-		df = pd.read_csv(csvpath, index_col=0)
-		if k==120:
-			df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'r', self.outer_circle])
-		elif k==99:
-			df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'g', self.outer_circle])
-		elif k==122:
-			df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'b', self.outer_circle])
-			
-		df.to_csv(csvpath)
-		
-		LAST_item_cnt = -1
-		for i in glob.glob(croppeddir + "/LAST/*"):
-			LAST_item_cnt+=1
-		cv2.imwrite(croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg", img)
