@@ -15,7 +15,7 @@ if __name__ == '__main__':
 	######  parameters  ######
 	outer_circle = 10
 	rectangle_thickness = 2
-	circle_thickness = 1
+	circle_thickness = 2
 	grid_thickness = 2
 	denoise = True
 	center_white = False
@@ -35,16 +35,13 @@ if __name__ == '__main__':
 		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist_all': -1, 'hist_partial': 0, 'mask': 0}
 		locked = -1
 		x_fix = 1
-		annotation_checker = True
-		pending_1st_time = True
+		pending_1st_time = annotation_checker = True
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		croppeddir=os.path.join(path, os.path.basename(fname))
 		exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
 		
 		if bool(glob.glob(croppeddir + "_pending")):
-			print('this is pended image.')
-			pending_1st_time = False
-			annotation_checker = False
+			pending_1st_time = annotation_checker = False
 			croppeddir = croppeddir + "_pending"
 			fname = fname + "_pending"
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
@@ -62,22 +59,14 @@ if __name__ == '__main__':
 						break
 				
 			successive_new_frame = 0
-			LAST_item_cnt = 0
-			
-			for i in glob.glob(croppeddir + "/LAST/*"):
-				LAST_item_cnt+=1
-				
+			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))
 			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
 		else:
 			if os.path.exists(croppeddir):# already exist
 				annotation_checker = False
 				if ("_pending" in croppeddir) and (bool(glob.glob(croppeddir + "/*annotated.jpg"))==False): # when pending(not finished)
 					pending_1st_time = False
-					LAST_item_cnt = 0
-					
-					for i in glob.glob(croppeddir + "/LAST/*"):
-						LAST_item_cnt+=1
-						
+					LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))
 					img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
 				else: # finished
 					break_check = 1
@@ -86,11 +75,8 @@ if __name__ == '__main__':
 				img = cv2.imread(fname)
 				exe.initial_frame_setting(croppeddir, fname, img)
 			
-			
 		if break_check==0:
-			
 			end = 0
-			
 			exe.initial_frame_setting(croppeddir, fname, img) if successive_new_frame == 1 else None
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
 			
@@ -106,7 +92,6 @@ if __name__ == '__main__':
 				if locked == -1:
 					## check object
 					if k==122 or k==120 or k==99: # input 'z', 'x' or 'c'
-						print(annotation_checker)
 						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker)
 						
 					## ask to move to the next image
@@ -127,6 +112,7 @@ if __name__ == '__main__':
 							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname)) + "_annotated.jpg", img) 
 						else:
 							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname[:-4])) + "_annotated.jpg", img)  # need to be changed for pending
+						
 						cv2.imwrite(croppeddir + "/LAST/black.jpg", img)
 						break
 						

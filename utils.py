@@ -86,7 +86,6 @@ class Annotation:
 		## mask
 		if image_process_check['mask'] == 0:
 			mask_ul_x, mask_ul_y = self.dis_x, self.dis_y
-			
 		else:
 			drag = cv2.circle(drag, (mask_ul_x, mask_ul_y), 1, (255, 255, 255), 3)
 			mask_br_x, mask_br_y = self.dis_x, self.dis_y
@@ -202,9 +201,7 @@ class Annotation:
 		
 		df.to_csv(csvpath)
 		if resume == 1 or annotation_checker==False: # for checkr also
-			LAST_item_cnt = 0
-			for i in glob.glob(croppeddir + "/LAST/*[0-9]*"):
-				LAST_item_cnt+=1
+			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*[0-9]*"))
 			print("saved: " + croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg")
 			cv2.imwrite(croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg", img)
 		else:

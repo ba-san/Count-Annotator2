@@ -24,14 +24,16 @@ if __name__ == '__main__':
 	show_count = True
 	##########################
 	
-	exe = Checker(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, center_white, show_count)
 	
 	for croppeddir in files2:
+		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
 		frm_ppl_cnt = 1 #frame people count
 		break_check = 0
 		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist_all': -1, 'hist_partial': 0, 'mask': 0}
 		locked = -1
 		x_fix = 1
+		annotation_checker = False
+		pending_1st_time = True
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		basename = os.path.basename(croppeddir)
 		
@@ -41,6 +43,9 @@ if __name__ == '__main__':
 	
 		if not bool(glob.glob(croppeddir + "/*annotated.jpg")):
 			break_check=1
+		
+		if basename[-8:] == "_pending":
+			pending_1st_time = False
 		###################
 		
 		if break_check==0:
@@ -49,9 +54,7 @@ if __name__ == '__main__':
 			
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv")
 			
-			LAST_item_cnt = -1 # different from annotation. this is for 'black.jpg'
-			for i in glob.glob(croppeddir + "/LAST/*"):
-				LAST_item_cnt+=1
+			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))-1 # different from annotation. this is for 'black.jpg'
 			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
 			
 			cv2.namedWindow(croppeddir, cv2.WINDOW_NORMAL)
@@ -66,7 +69,7 @@ if __name__ == '__main__':
 				if locked == -1:
 					## check object
 					if k==122 or k==120 or k==99: # input 'z', 'x' or 'c'
-						exe.check_pnt(img, k, csvcurrentimg, croppeddir, csvpath, path)
+						exe.check_pnt(img, k, 100, csvcurrentimg, croppeddir, csvpath, path, annotation_checker) # 100 is resume. no need to think about it.
 						
 					## ask to move to the next image
 					elif k==13: #enter key
@@ -81,7 +84,7 @@ if __name__ == '__main__':
 							recov_min_mask_x, recov_max_mask_x = df.loc[i, 'min_mask_x'], df.loc[i, 'max_mask_x']
 							recov_min_mask_y, recov_max_mask_y = df.loc[i, 'min_mask_y'], df.loc[i, 'max_mask_y']
 							img[recov_min_mask_y:recov_max_mask_y, recov_min_mask_x:recov_max_mask_x, :] = np.zeros((recov_max_mask_y - recov_min_mask_y, recov_max_mask_x - recov_min_mask_x, 3), np.uint8)
-				
+							
 						cv2.imwrite(os.path.join(croppeddir, os.path.basename(croppeddir[:-4])) + "_annotated.jpg", img) #rewrite
 						os.rename(croppeddir, croppeddir + "_checked")
 						break
@@ -109,6 +112,15 @@ if __name__ == '__main__':
 						except:
 							pass
 							
+					elif k==112: #input 'p'
+						if pending_1st_time:
+							df = pd.read_csv(csvpath, index_col=0)
+							df = df.replace(croppeddir, croppeddir + "_pending")
+							df.to_csv(csvpath)
+							os.rename(exe.mask_csv_path, exe.mask_csv_path[:-4] + "_pending.csv")
+							os.rename(croppeddir, croppeddir + "_pending")
+						break
+						
 				img, image_process_check, x_fix, end, locked = exe.minor_functions(k, initimg, img, croppeddir, image_process_check, x_fix, end, locked)
 				
 				cv2.setMouseCallback(croppeddir, exe.dragging, [initimg, img, image_process_check, croppeddir, path, x_fix])
