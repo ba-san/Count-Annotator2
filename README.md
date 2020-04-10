@@ -80,6 +80,7 @@ Z,X,C   -- count object (different colors)
 &nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;   -- refer to original/denoised image (some functions cannot be used while this mode)  
 &nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- show histgram-equalized image  
 &nbsp;&nbsp;&nbsp;Y&nbsp;&nbsp;&nbsp;   -- make image sharp  
+&nbsp;&nbsp;&nbsp;P&nbsp;&nbsp;&nbsp;   -- pending  
 I,J,K,M-- move pointer up, left, right, down respectively  
 &nbsp;&nbsp;&nbsp;A,S  -- make circle smaller/bigger  
 &nbsp;&nbsp;&nbsp;Q,W  -- make window smaller/bigger  
