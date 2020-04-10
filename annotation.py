@@ -10,7 +10,7 @@ if __name__ == '__main__':
 	csvpath = os.path.join(path, folder) + ".csv"
 	
 	resume = 1 # 0 is new, 1 is resume. Don't change this number. this is only for annotation (not for checker)
-	successive_new_frame = LAST_item_cnt = 0
+	successive_new_frame = 0
 	
 	######  parameters  ######
 	outer_circle = 10
@@ -50,24 +50,23 @@ if __name__ == '__main__':
 			annotation_checker = False
 			if successive_new_frame == 0:
 				for left in glob.glob(path + '/*'):
-					if os.path.basename(left) == os.path.basename(fname):
-						if bool(glob.glob(croppeddir + "/*annotated.jpg")): # already annotated
-							break_check = 1
-							break
+					if os.path.basename(left) == os.path.basename(fname) and bool(glob.glob(croppeddir + "/*annotated.jpg")): # already annotated
+						break_check = 1
+						break
 					elif os.path.basename(fname) + "_cropped" == os.path.basename(left) or os.path.basename(fname) + "_checked" == os.path.basename(left):
 						break_check = 1
 						break
 				
 			successive_new_frame = 0
-			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))
-			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
+			num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
+			img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
 		else:
 			if os.path.exists(croppeddir):# already exist
 				annotation_checker = False
 				if ("_pending" in croppeddir) and (bool(glob.glob(croppeddir + "/*annotated.jpg"))==False): # when pending(not finished)
 					pending_1st_time = False
-					LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))
-					img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
+					num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
+					img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
 				else: # finished
 					break_check = 1
 			else:
@@ -111,7 +110,7 @@ if __name__ == '__main__':
 						if "_pending" in fname:
 							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname)) + "_annotated.jpg", img) 
 						else:
-							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname[:-4])) + "_annotated.jpg", img)  # need to be changed for pending
+							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname[:-4])) + "_annotated.jpg", img)
 						
 						cv2.imwrite(croppeddir + "/LAST/black.jpg", img)
 						break

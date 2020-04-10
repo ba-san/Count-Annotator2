@@ -10,9 +10,7 @@ if __name__ == '__main__':
 	checkpath = PWD + folder + "_checked"
 	croppath = PWD + folder + "_cropped"
 	csvpath = os.path.join(path, folder) + ".csv"
-	
-	resume = 1 # 0 is new, 1 is resume. Don't change this number. this is only for annotation (not for checker)
-	successive_new_frame = LAST_item_cnt = 0
+	resume = 1 # Don't change this number. this is only for annotation
 	
 	######  parameters  ######
 	outer_circle = 10
@@ -24,10 +22,9 @@ if __name__ == '__main__':
 	show_count = True
 	##########################
 	
-	
 	for croppeddir in files2:
 		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
-		frm_ppl_cnt = 1 #frame people count
+		frm_ppl_cnt = 1
 		break_check = 0
 		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist_all': -1, 'hist_partial': 0, 'mask': 0}
 		locked = -1
@@ -69,7 +66,7 @@ if __name__ == '__main__':
 				if locked == -1:
 					## check object
 					if k==122 or k==120 or k==99: # input 'z', 'x' or 'c'
-						exe.check_pnt(img, k, 100, csvcurrentimg, croppeddir, csvpath, path, annotation_checker) # 100 is resume. no need to think about it.
+						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker)
 						
 					## ask to move to the next image
 					elif k==13: #enter key

@@ -17,20 +17,17 @@ class Annotation:
 		self.center_white = center_white
 		self.show_count = show_count
 		## initialize ##
-		self.dis_x, self.dis_y = 0, 0
-		self.min_mask_x, self.max_mask_x, self.min_mask_y, self.max_mask_y = 0, 0, 0, 0
 		self.box_size = 0
+		self.dis_x = self.dis_y = 0
+		self.img_saved = self.img_denoised = 0
+		self.min_mask_x = self.max_mask_x = self.min_mask_y = self.max_mask_y = 0
 		self.mask_csv_path = ''
-		self.img_saved = 0
-		self.img_denoised = 0
 		
 	## https://www.geeksforgeeks.org/insert-row-at-given-position-in-pandas-dataframe/
 	# Function to insert row in the dataframe. this is only for checker
 	def Insert_row(self, row_number, df, row_value):
-		start_upper = 0
-		end_upper = row_number
-		start_lower = row_number
-		end_lower = df.shape[0]
+		start_upper, end_lower = 0, df.shape[0]
+		start_lower, end_upper = row_number, row_number
 		
 		upper_half = [*range(start_upper, end_upper, 1)]
 		lower_half = [*range(start_lower, end_lower, 1)]
@@ -166,8 +163,7 @@ class Annotation:
 		img = cv2.rectangle(img, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
 		
 		print('You have counted {} people in this directory.\nThis time, you have counted {} people. Press B to stop.'.format(lastrow, frm_ppl_cnt))
-		frm_ppl_cnt = int(frm_ppl_cnt)
-		frm_ppl_cnt+=1
+		frm_ppl_cnt = int(frm_ppl_cnt)+1
 		
 		with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
 			f.write(str(frm_ppl_cnt))
@@ -201,9 +197,9 @@ class Annotation:
 		
 		df.to_csv(csvpath)
 		if resume == 1 or annotation_checker==False: # for checkr also
-			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*[0-9]*"))
-			print("saved: " + croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg")
-			cv2.imwrite(croppeddir + "/LAST/" + str(LAST_item_cnt) + ".jpg", img)
+			num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*[0-9]*"))
+			print("saved: " + croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir) + ".jpg")
+			cv2.imwrite(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir) + ".jpg", img)
 		else:
 			cv2.imwrite(croppeddir + "/LAST/" + str(lastrow - csvcurrentimg) + ".jpg", img)
 		
@@ -351,17 +347,17 @@ class Annotation:
 			self.move(0, 1, initimg, move_file, img, image_process_check)
 			
 		elif k==97: #input 'a'
-			self.outer_circle = self.outer_circle - 1
+			self.outer_circle -= 1
 			self.outer_circle = 6 if self.outer_circle == 5 else self.outer_circle
 			
 		elif k==115: #input 's'
-			self.outer_circle = self.outer_circle + 1
+			self.outer_circle += 1
 			
 		elif k==113: #input 'q'
-			self.box_size = self.box_size - 2
+			self.box_size -= 2
 			
 		elif k==119: #input 'w'
-			self.box_size = self.box_size + 2 if self.box_size < 145 else self.box_size
+			self.box_size += 2 if self.box_size < 145 else self.box_size
 			
 		## fix x-axis
 		elif k==104: #input 'h'
