@@ -6,7 +6,7 @@ You can prepare annotated images for object counting and csv file which contains
 The programs can be worked on both Linux and Windows.  
 
 You can see demo movie below.  
-[![DEMO MOVIE](https://img.youtube.com/vi/DyAHNF1aWYM/0.jpg)](https://www.youtube.com/watch?v=DyAHNF1aWYM)
+[![DEMO MOVIE](https://img.youtube.com/vi/S-yJkraffeI/10.jpg)](https://www.youtube.com/watch?v=S-yJkraffeI)
 
 From a big single frame, this program will create a myriad of cropped images.  
 To do this, 1.input original images.  
