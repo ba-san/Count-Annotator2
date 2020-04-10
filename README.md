@@ -70,6 +70,7 @@ folder = "pocari-cm.mp4" #input images in this directory
 
 #### Keyboard intructions
 <img src="https://user-images.githubusercontent.com/44015510/78996331-537d3900-7b7f-11ea-82fa-5105a250c105.png" width="600">  
+
 Z,X,C   -- count object (different colors)  
 &nbsp;&nbsp;&nbsp;V&nbsp;&nbsp;&nbsp;   -- cover black mask  
 &nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;   -- stop annotation. **DO NOT END IT BY TYPING 'Ctrl + C' OR ANY OTHER WAY!!**  
