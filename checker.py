@@ -1,4 +1,3 @@
-### v2 has cover/remove mask functions ###
 from utils import *
 
 if __name__ == '__main__':
@@ -10,7 +9,7 @@ if __name__ == '__main__':
 	checkpath = PWD + folder + "_checked"
 	croppath = PWD + folder + "_cropped"
 	csvpath = os.path.join(path, folder) + ".csv"
-	resume = 1 # Don't change this number. this is only for annotation
+	resume = True # Don't change this. this is only for annotation
 	
 	######  parameters  ######
 	outer_circle = 10
@@ -25,28 +24,26 @@ if __name__ == '__main__':
 	for croppeddir in files2:
 		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
 		frm_ppl_cnt = 1
-		break_check = 0
-		image_process_check = {'grid_binary': -1, 'sharp': -1, 'hist_all': -1, 'hist_partial': 0, 'mask': 0}
-		locked = -1
-		x_fix = 1
+		break_check = locked = x_fix = False
 		annotation_checker = False
-		pending_1st_time = True
+		pend_flaging_1st_time = True
+		image_process_check = {'grid_binary': False, 'sharp': False, 'hist_all': False, 'hist_partial': 0, 'mask': 0}
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		basename = os.path.basename(croppeddir)
 		
 		### for checker ###
 		if basename[-8:] == "_cropped" or basename[-8:] == "_checked" or basename[-4:] == ".csv":
-			break_check=1
+			break_check=True
 	
 		if not bool(glob.glob(croppeddir + "/*annotated.jpg")):
-			break_check=1
+			break_check=True
 		
-		if basename[-8:] == "_pending":
-			pending_1st_time = False
+		if basename[-8:] == "_pend_flaging":
+			pend_flaging_1st_time = False
 		###################
 		
-		if break_check==0:
-			end = 0
+		if break_check==False:
+			end_flag = 0
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
 			
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv")
@@ -61,21 +58,21 @@ if __name__ == '__main__':
 			
 			while True:
 				k = cv2.waitKey(0) # waiting input
-				end-=1 if end > 0 else 0
+				end_flag-=1 if end_flag > 0 else 0
 				
-				if locked == -1:
+				if locked == False:
 					## check object
-					if k==122 or k==120 or k==99: # input 'z', 'x' or 'c'
+					if k == (99 or 120 or 122): # input 'z', 'x' or 'c'
 						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker)
 						
 					## ask to move to the next image
 					elif k==13: #enter key
 						print('You are really OK to process current image and move to the next image? If yes, press \'n\'.')
-						end = 2
+						end_flag = 2
 						
 					## go next image
-					elif k==110 and end > 0: # 'n'
-						end = 0
+					elif k==110 and end_flag > 0: # 'n'
+						end_flag = 0
 						df = pd.read_csv(exe.mask_csv_path, index_col=0)
 						for i in range(len(df)):
 							recov_min_mask_x, recov_max_mask_x = df.loc[i, 'min_mask_x'], df.loc[i, 'max_mask_x']
@@ -100,7 +97,7 @@ if __name__ == '__main__':
 						if image_process_check['mask']==0:
 							mask_csv = pd.read_csv(exe.mask_csv_path, index_col=0)
 							series = pd.Series([exe.min_mask_x, exe.max_mask_x, exe.min_mask_y, exe.max_mask_y], index=mask_csv.columns)
-							mask_csv = mask_csv.append(series, ignore_index=True)
+							mask_csv = mask_csv.append_flag(series, ignore_index=True)
 							mask_csv.to_csv(exe.mask_csv_path)
 							
 					elif k==102: #input 'f'
@@ -110,15 +107,11 @@ if __name__ == '__main__':
 							pass
 							
 					elif k==112: #input 'p'
-						if pending_1st_time:
-							df = pd.read_csv(csvpath, index_col=0)
-							df = df.replace(croppeddir, croppeddir + "_pending")
-							df.to_csv(csvpath)
-							os.rename(exe.mask_csv_path, exe.mask_csv_path[:-4] + "_pending.csv")
-							os.rename(croppeddir, croppeddir + "_pending")
+						if pend_flaging_1st_time:
+							exe.pend_flaging(csvpath, croppeddir)
 						break
 						
-				img, image_process_check, x_fix, end, locked = exe.minor_functions(k, initimg, img, croppeddir, image_process_check, x_fix, end, locked)
+				img, image_process_check, x_fix, end_flag, locked = exe.minor_functions(k, initimg, img, croppeddir, image_process_check, x_fix, end_flag, locked)
 				
 				cv2.setMouseCallback(croppeddir, exe.dragging, [initimg, img, image_process_check, croppeddir, path, x_fix])
 		
