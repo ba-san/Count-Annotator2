@@ -1,6 +1,6 @@
 from utils import *
 
-if __name__ == '__main__':
+def main():
 	folder = "crowd_night_annotation" # must be "OO_output"
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
@@ -116,3 +116,6 @@ if __name__ == '__main__':
 				cv2.setMouseCallback(croppeddir, exe.dragging, [initimg, img, image_process_check, croppeddir, path, x_fix])
 		
 			cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+	main()

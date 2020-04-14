@@ -1,6 +1,6 @@
 from utils import *
 
-if __name__ == '__main__':
+def main():
 	#folder = "crowd_night_annotation" #input images in this directory
 	folder = "mini" #input images in this directory
 	PWD = os.getcwd() + "/" # for linux
@@ -153,3 +153,6 @@ if __name__ == '__main__':
 			successive_new_frame = True
 			resume = False
 			cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+	main()
