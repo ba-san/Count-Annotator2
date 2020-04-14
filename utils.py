@@ -76,7 +76,7 @@ class Annotation:
 				drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j] = cv2.equalizeHist(drag[min_hist_y:max_hist_y, min_hist_x:max_hist_x, j])  # equalize for each channel
 				
 		## hist all
-		if image_process_check['hist_all'] == 1:
+		if image_process_check['hist_all'] == True:
 			for j in range(3):
 				drag[:, :, j] = cv2.equalizeHist(drag[:, :, j])  # equalize for each channel
 				
@@ -97,13 +97,13 @@ class Annotation:
 			drag[recov_min_mask_y:recov_max_mask_y, recov_min_mask_x:recov_max_mask_x, :] = np.zeros((recov_max_mask_y - recov_min_mask_y, recov_max_mask_x - recov_min_mask_x, 3), np.uint8)
 			
 		## make it sharp
-		if image_process_check['sharp'] == 1:
+		if image_process_check['sharp'] == True:
 			#kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]], np.float32) # 8 neighbors
 			kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]], np.float32) # 4 neighbors
 			drag = cv2.filter2D(drag, -1, kernel)
 		
 		## grid
-		if image_process_check['grid_binary'] == 1:
+		if image_process_check['grid_binary'] == True:
 			for i in range(0, drag.shape[1], 300):
 				drag = cv2.line(drag,(i,0),(i,drag.shape[0]),(102,140,58),thickness=self.grid_thickness)
 			for j in range(0, drag.shape[0], 300):
@@ -196,7 +196,7 @@ class Annotation:
 			df = df.append(series, ignore_index=True)  # only annotaion
 		
 		df.to_csv(csvpath)
-		if resume == 1 or annotation_checker==False: # for checkr also
+		if resume == True or annotation_checker==False: # for checker also
 			num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*[0-9]*"))
 			print("saved: " + croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir) + ".jpg")
 			cv2.imwrite(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir) + ".jpg", img)
@@ -240,7 +240,7 @@ class Annotation:
 					recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 255, 0), self.circle_thickness)
 				elif recov_color=='b': #blue
 					recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), self.circle_thickness)
-				else: #red
+				elif recov_color=='r': #red
 					recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), self.circle_thickness)
 					
 				recov = cv2.circle(recov, (recov_x, recov_y), 1, (255, 255, 255), -1)
@@ -283,16 +283,23 @@ class Annotation:
 		drag = cv2.rectangle(drag, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
 		self.discriminator(initimg, drag, fname, img.shape[0], img.shape[1], image_process_check)
 	
+	def pending(self, csvpath, croppeddir):
+		df = pd.read_csv(csvpath, index_col=0)
+		df = df.replace(croppeddir, croppeddir + "_pending")
+		df.to_csv(csvpath)
+		os.rename(self.mask_csv_path, self.mask_csv_path[:-4] + "_pending.csv")
+		os.rename(croppeddir, croppeddir + "_pending")
+	
 	def dragging(self, event, x, y, flags, param):
 		initimg, img, image_process_check, fname, path, x_fix = param
 		height, width = img.shape[0], img.shape[1]
 		
 		if initimg.shape[0]>1200.0: #shape[0] is height
 			self.dis_x = int(x * (initimg.shape[0]/1200.0))
-			self.dis_y = int(y * (initimg.shape[0]/1200.0)) if x_fix == 1 else self.dis_y
+			self.dis_y = int(y * (initimg.shape[0]/1200.0)) if x_fix == False else self.dis_y
 		else:
 			self.dis_x = x
-			self.dis_y = y if x_fix == 1 else self.dis_y
+			self.dis_y = y if x_fix == False else self.dis_y
 		
 		drag = copy.copy(img)
 		drag = cv2.rectangle(drag, (50, 50), (width-50, height-50), (40, 61, 20), thickness=2)
@@ -319,11 +326,11 @@ class Annotation:
 			
 		## show/remove grid
 		elif k==103: #input 'g'
-			image_process_check['grid_binary'] = -image_process_check['grid_binary']
+			image_process_check['grid_binary'] = not image_process_check['grid_binary']
 			
 		## make it sharp (unsharpmasking)
 		elif k==116: #input 't'
-			image_process_check['sharp'] = -image_process_check['sharp']
+			image_process_check['sharp'] = not image_process_check['sharp']
 			
 		## hist partial
 		elif k==117: #input 'u'
@@ -331,7 +338,7 @@ class Annotation:
 			
 		## hist all
 		elif k==121: #input 'y'
-			image_process_check['hist_all'] = -image_process_check['hist_all']
+			image_process_check['hist_all'] = not image_process_check['hist_all']
 			
 		## move position by keyboard 
 		elif k==105: #input i
@@ -361,15 +368,15 @@ class Annotation:
 			
 		## fix x-axis
 		elif k==104: #input 'h'
-			x_fix = - x_fix
+			x_fix = not x_fix
 			
 		elif k==101: # input 'e'
 			self.center_white = not self.center_white
 			
 		## refer to original image or denoise image
 		elif k==114: #input 'r'
-			locked = - locked
-			if locked == 1: # when get locked
+			locked = not locked
+			if locked == True: # when get locked
 				self.img_saved = img
 				img = initimg
 				

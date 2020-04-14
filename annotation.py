@@ -1,7 +1,8 @@
 from utils import *
 
 if __name__ == '__main__':
-	folder = "crowd_night_annotation" #input images in this directory
+	#folder = "crowd_night_annotation" #input images in this directory
+	folder = "mini" #input images in this directory
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	files=glob.glob(PWD + folder + "/*")
@@ -31,16 +32,16 @@ if __name__ == '__main__':
 		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
 		frm_ppl_cnt = 1 #frame people count
 		break_check = locked = x_fix = False
-		pend_flaging_1st_time = annotation_checker = True
+		pending_1st_time = annotation_checker = True
 		image_process_check = {'grid_binary': False, 'sharp': False, 'hist_all': False, 'hist_partial': 0, 'mask': 0}
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		croppeddir=os.path.join(path, os.path.basename(fname))
 		exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
 		
-		if bool(glob.glob(croppeddir + "_pend_flaging")):
-			pend_flaging_1st_time = annotation_checker = False
-			croppeddir = croppeddir + "_pend_flaging"
-			fname = fname + "_pend_flaging"
+		if bool(glob.glob(croppeddir + "_pending")):
+			pending_1st_time = annotation_checker = False
+			croppeddir = croppeddir + "_pending"
+			fname = fname + "_pending"
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(fname) + ".csv")
 		
 		if resume == True: # too deep nest.
@@ -60,19 +61,24 @@ if __name__ == '__main__':
 		else:
 			if os.path.exists(croppeddir):# already exist
 				annotation_checker = False
-				if ("_pend_flaging" in croppeddir) and (bool(glob.glob(croppeddir + "/*annotated.jpg"))==False): # when pend_flaging(not finished)
-					pend_flaging_1st_time = False
+				if ("_pending" in croppeddir) and (bool(glob.glob(croppeddir + "/*annotated.jpg"))==False): # when pending(not finished)
+					pending_1st_time = False
 					num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
 					img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
-				else: # finished
+				elif (bool(glob.glob(croppeddir + "/*annotated.jpg"))==True): # finished
 					break_check = True
+				else: # last time, ended 'b' img
+					num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
+					img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
 			else: # new annotation image
 				img = cv2.imread(fname)
 				exe.initial_frame_setting(croppeddir, fname, img)
-			
+		
+		print(croppeddir)
 		if break_check==False:
 			end_flag = 0
-			exe.initial_frame_setting(croppeddir, fname, img) if successive_new_frame == True else None
+			print('successive:{}'.format(successive_new_frame))
+			exe.initial_frame_setting(croppeddir, fname, img) if (successive_new_frame == True and not os.path.exists(croppeddir)) else None
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
 			
 			cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
@@ -103,7 +109,7 @@ if __name__ == '__main__':
 							recov_min_mask_y, recov_max_mask_y = df.loc[i, 'min_mask_y'], df.loc[i, 'max_mask_y']
 							img[recov_min_mask_y:recov_max_mask_y, recov_min_mask_x:recov_max_mask_x, :] = np.zeros((recov_max_mask_y - recov_min_mask_y, recov_max_mask_x - recov_min_mask_x, 3), np.uint8)
 						
-						if "_pend_flaging" in fname:
+						if "_pending" in fname:
 							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname)) + "_annotated.jpg", img) 
 						else:
 							cv2.imwrite(os.path.join(croppeddir, os.path.basename(fname[:-4])) + "_annotated.jpg", img)
@@ -125,7 +131,7 @@ if __name__ == '__main__':
 						if image_process_check['mask']==0:
 							mask_csv = pd.read_csv(exe.mask_csv_path, index_col=0)
 							series = pd.Series([exe.min_mask_x, exe.max_mask_x, exe.min_mask_y, exe.max_mask_y], index=mask_csv.columns)
-							mask_csv = mask_csv.append_flag(series, ignore_index=True)
+							mask_csv = mask_csv.append(series, ignore_index=True)
 							mask_csv.to_csv(exe.mask_csv_path)
 							
 					elif k==102: #input 'f'
@@ -135,8 +141,10 @@ if __name__ == '__main__':
 							pass
 							
 					elif k==112: #input 'p'
-						if pend_flaging_1st_time:
-							exe.pend_flaging(csvpath, croppeddir)
+						if pending_1st_time:
+							print(csvpath)
+							print(croppeddir)
+							exe.pending(csvpath, croppeddir)
 						break
 						
 				img, image_process_check, x_fix, end_flag, locked = exe.minor_functions(k, initimg, img, fname, image_process_check, x_fix, end_flag, locked)
