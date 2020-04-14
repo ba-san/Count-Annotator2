@@ -1,7 +1,7 @@
 from utils import *
 
 if __name__ == '__main__':
-	folder = "crowd_night_annotation" # must be "OO_output"
+	folder = "20-new2" # must be "OO_output"
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	path = PWD + folder + "_output"
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 		frm_ppl_cnt = 1
 		break_check = locked = x_fix = False
 		annotation_checker = False
-		pend_flaging_1st_time = True
+		pending_1st_time = True
 		image_process_check = {'grid_binary': False, 'sharp': False, 'hist_all': False, 'hist_partial': 0, 'mask': 0}
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		basename = os.path.basename(croppeddir)
@@ -35,11 +35,11 @@ if __name__ == '__main__':
 		if basename[-8:] == "_cropped" or basename[-8:] == "_checked" or basename[-4:] == ".csv":
 			break_check=True
 	
-		if not bool(glob.glob(croppeddir + "/*annotated.jpg")):
+		if bool(glob.glob(croppeddir + "/mask_finished.txt")):
 			break_check=True
 		
-		if basename[-8:] == "_pend_flaging":
-			pend_flaging_1st_time = False
+		if basename[-8:] == "_pending":
+			pending_1st_time = False
 		###################
 		
 		if break_check==False:
@@ -47,6 +47,10 @@ if __name__ == '__main__':
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
 			
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv")
+			df = pd.read_csv(exe.mask_csv_path, index_col=0)
+			if len(df.columns)!=4:
+				mask_csv = pd.DataFrame(columns=['min_mask_x', 'max_mask_x', 'min_mask_y', 'max_mask_y'])
+				mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv"))
 			
 			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))-1 # different from annotation. this is for 'black.jpg'
 			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
@@ -61,12 +65,8 @@ if __name__ == '__main__':
 				end_flag-=1 if end_flag > 0 else 0
 				
 				if locked == False:
-					## check object
-					if k == 99 or k==120 or k==122: # input 'z', 'x' or 'c'
-						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker)
-						
 					## ask to move to the next image
-					elif k==13: #enter key
+					if k==13: #enter key
 						print('You are really OK to process current image and move to the next image? If yes, press \'n\'.')
 						end_flag = 2
 						
@@ -80,15 +80,9 @@ if __name__ == '__main__':
 							img[recov_min_mask_y:recov_max_mask_y, recov_min_mask_x:recov_max_mask_x, :] = np.zeros((recov_max_mask_y - recov_min_mask_y, recov_max_mask_x - recov_min_mask_x, 3), np.uint8)
 							
 						cv2.imwrite(os.path.join(croppeddir, os.path.basename(croppeddir[:-4])) + "_annotated.jpg", img) #rewrite
-						os.rename(croppeddir, croppeddir + "_checked")
+						with open(croppeddir + '/mask_finished.txt', mode='w') as f:
+							f.write('Mask Finished.')
 						break
-						
-					## delete nearest point
-					elif k==118: #input 'v'
-						try:
-							img = exe.delete_nearest_pt(img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
-						except:
-							pass
 						
 					## black mask
 					elif k==100: # input 'd'
@@ -97,7 +91,7 @@ if __name__ == '__main__':
 						if image_process_check['mask']==0:
 							mask_csv = pd.read_csv(exe.mask_csv_path, index_col=0)
 							series = pd.Series([exe.min_mask_x, exe.max_mask_x, exe.min_mask_y, exe.max_mask_y], index=mask_csv.columns)
-							mask_csv = mask_csv.append_flag(series, ignore_index=True)
+							mask_csv = mask_csv.append(series, ignore_index=True)
 							mask_csv.to_csv(exe.mask_csv_path)
 							
 					elif k==102: #input 'f'
@@ -107,8 +101,8 @@ if __name__ == '__main__':
 							pass
 							
 					elif k==112: #input 'p'
-						if pend_flaging_1st_time:
-							exe.pend_flaging(csvpath, croppeddir)
+						if pending_1st_time:
+							exe.pending(csvpath, croppeddir)
 						break
 						
 				img, image_process_check, x_fix, end_flag, locked = exe.minor_functions(k, initimg, img, croppeddir, image_process_check, x_fix, end_flag, locked)

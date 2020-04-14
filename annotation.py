@@ -14,9 +14,9 @@ if __name__ == '__main__':
 	
 	######  parameters  ######
 	outer_circle = 10
-	rectangle_thickness = 2
-	circle_thickness = 2
-	grid_thickness = 2
+	rectangle_thickness = 1
+	circle_thickness = 1
+	grid_thickness = 1
 	denoise = True
 	center_white = False
 	show_count = False
@@ -74,10 +74,8 @@ if __name__ == '__main__':
 				img = cv2.imread(fname)
 				exe.initial_frame_setting(croppeddir, fname, img)
 		
-		print(croppeddir)
 		if break_check==False:
 			end_flag = 0
-			print('successive:{}'.format(successive_new_frame))
 			exe.initial_frame_setting(croppeddir, fname, img) if (successive_new_frame == True and not os.path.exists(croppeddir)) else None
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
 			
@@ -92,7 +90,7 @@ if __name__ == '__main__':
 				
 				if locked == False:
 					## check object
-					if k == (99 or 120 or 122): # input 'z', 'x' or 'c'
+					if k == 99 or k==120 or k==122: # input 'z', 'x' or 'c'
 						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker)
 						
 					## ask to move to the next image
