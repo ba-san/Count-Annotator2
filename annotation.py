@@ -30,7 +30,7 @@ def main():
 		
 	for fname in files:
 		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
-		frm_ppl_cnt = 1 #frame people count
+		initimg = cv2.imread(fname)
 		break_check = locked = x_fix = False
 		pending_1st_time = annotation_checker = True
 		image_process_check = {'grid_binary': False, 'sharp': False, 'hist_all': False, 'hist_partial': 0, 'mask': 0}
@@ -56,36 +56,37 @@ def main():
 						break
 				
 			successive_new_frame = False
-			num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
-			img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
+			img = initimg
+			img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
+			
 		else:
 			if os.path.exists(croppeddir):# already exist
 				annotation_checker = False
 				if ("_pending" in croppeddir) and (bool(glob.glob(croppeddir + "/*annotated.jpg"))==False): # when pending(not finished)
 					pending_1st_time = False
-					num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
-					img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
+					img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
 				elif (bool(glob.glob(croppeddir + "/*annotated.jpg"))==True): # finished
 					break_check = True
 				else: # last time, ended 'b' img
-					num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*"))
-					img = cv2.imread(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir-1) + ".jpg")
+					img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
 			else: # new annotation image
-				img = cv2.imread(fname)
-				exe.initial_frame_setting(croppeddir, fname, img)
+				img = copy.copy(initimg)
+				exe.initial_frame_setting(croppeddir, fname)
 		
 		if break_check==False:
 			end_flag = 0
-			exe.initial_frame_setting(croppeddir, fname, img) if (successive_new_frame == True and not os.path.exists(croppeddir)) else None
-			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
+			exe.initial_frame_setting(croppeddir, fname) if (successive_new_frame == True and not os.path.exists(croppeddir)) else None
 			
 			cv2.namedWindow(fname, cv2.WINDOW_NORMAL)
 			cv2.imshow(fname, img)
+			cv2.imwrite(croppeddir + "/LAST/0.jpg", initimg)
 			
+			print('id before first callback:{}'.format(id(img)))
 			cv2.setMouseCallback(fname, exe.dragging, [initimg, img, image_process_check, fname, path, x_fix])
 			
 			while True:
 				k = cv2.waitKey(0) # waiting input
+				
 				end_flag-=1 if end_flag > 0 else 0
 				
 				if locked == False:
@@ -118,7 +119,8 @@ def main():
 					## delete nearest point
 					elif k==118: #input 'v'
 						try:
-							img = exe.delete_nearest_pt(img, csvpath, path, fname, fname)
+							exe.delete_nearest_pt(initimg, csvpath, path, fname, fname)
+							img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
 						except:
 							pass
 						
@@ -140,15 +142,12 @@ def main():
 							
 					elif k==112: #input 'p'
 						if pending_1st_time:
-							print(csvpath)
-							print(croppeddir)
 							exe.pending(csvpath, croppeddir)
 						break
 						
 				img, image_process_check, x_fix, end_flag, locked = exe.minor_functions(k, initimg, img, fname, image_process_check, x_fix, end_flag, locked)
 				
 				cv2.setMouseCallback(fname, exe.dragging, [initimg, img, image_process_check, fname, path, x_fix])
-		
 			## for annotation (not for checker)
 			successive_new_frame = True
 			resume = False

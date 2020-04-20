@@ -22,7 +22,15 @@ class Annotation:
 		self.img_saved = self.img_denoised = 0
 		self.min_mask_x = self.max_mask_x = self.min_mask_y = self.max_mask_y = 0
 		self.mask_csv_path = ''
-		
+	
+	def get_row_cnt(self, csvpath, path, croppeddir):
+		df = pd.read_csv(csvpath, index_col=0)
+		row_cnt = 0
+		for i in range(len(df)):
+			if df.loc[i, 'image'] == os.path.join(path, os.path.basename(croppeddir)):
+				row_cnt+=1
+		return row_cnt
+	
 	## https://www.geeksforgeeks.org/insert-row-at-given-position-in-pandas-dataframe/
 	# Function to insert row in the dataframe. this is only for checker
 	def Insert_row(self, row_number, df, row_value):
@@ -142,11 +150,61 @@ class Annotation:
 			
 		else:
 			self.inside_discriminator(drag, initimg, self.dis_x-150+self.box_size, self.dis_y-150+self.box_size, self.dis_x+150-self.box_size, self.dis_y+150-self.box_size, fname)
+			
+	def dragging(self, event, x, y, flags, param):
+		initimg, img, image_process_check, fname, path, x_fix = param
+		height, width = img.shape[0], img.shape[1]
+		
+		if initimg.shape[0]>1200.0: #shape[0] is height
+			self.dis_x = int(x * (initimg.shape[0]/1200.0))
+			self.dis_y = int(y * (initimg.shape[0]/1200.0)) if x_fix == False else self.dis_y
+		else:
+			self.dis_x = x
+			self.dis_y = y if x_fix == False else self.dis_y
+		
+		drag = copy.copy(img)
+		drag = cv2.rectangle(drag, (50, 50), (width-50, height-50), (40, 61, 20), thickness=2)
+		
+		if event == cv2.EVENT_MOUSEMOVE:
+			self.discriminator(initimg, drag, fname, height, width, image_process_check)
+			
+	def initial_frame_setting(self, croppeddir, fname): # only for annotation (not for checker)
+		if not os.path.exists(croppeddir):
+			os.makedirs(croppeddir)
+			os.makedirs(croppeddir + "/LAST/")
+			mask_csv = pd.DataFrame(columns=['min_mask_x', 'max_mask_x', 'min_mask_y', 'max_mask_y'])
+			mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(fname) + ".csv"))
+			
+	def read_pt(self, initimg, img, csvpath, path, fname, windowname):
+		img = copy.copy(initimg)
+		csvimgcnt = 1
+		row = start_of_newimg_index = lowest_i = 0
+		df = pd.read_csv(csvpath, index_col=0)
+		for i in range(len(df)):
+			if df.loc[i, 'image'] == os.path.join(path, os.path.basename(fname)):
+				recov_x, recov_y = df.loc[i, 'x'], df.loc[i, 'y']
+				recov_color = df.loc[i, 'color']
+				recov_outer_circle = df.loc[i, 'outer_circle']
+				
+				if recov_color=='g': #green
+					img = cv2.circle(img, (recov_x, recov_y), recov_outer_circle, (0, 255, 0), self.circle_thickness)
+				elif recov_color=='b': #blue
+					img = cv2.circle(img, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), self.circle_thickness)
+				elif recov_color=='r': #red
+					img = cv2.circle(img, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), self.circle_thickness)
+					
+				img = cv2.circle(img, (recov_x, recov_y), 1, (255, 255, 255), -1)
+				if (self.show_count):
+					img = cv2.putText(img, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
+					img = cv2.putText(img, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+					
+		cv2.namedWindow(windowname, cv2.WINDOW_NORMAL)
+		cv2.imshow(windowname, img)
+		
+		return img
 		
 	def check_pnt(self, img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker):
-		with open(croppeddir + "/frame_people_count.txt") as f:
-			frm_ppl_cnt = f.read()
-		
+		row_cnt = self.get_row_cnt(csvpath, path, croppeddir)
 		lastrow = sum(1 for i in open(csvpath))
 		
 		if k==120: #red
@@ -158,16 +216,12 @@ class Annotation:
 		
 		img = cv2.circle(img, (self.dis_x, self.dis_y), 1, (255, 255, 255), -1)
 		if (self.show_count):
-			img = cv2.putText(img, str(frm_ppl_cnt), (self.dis_x-10,self.dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-			img = cv2.putText(img, str(frm_ppl_cnt), (self.dis_x-10,self.dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+			img = cv2.putText(img, str(row_cnt+1), (self.dis_x-10,self.dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
+			img = cv2.putText(img, str(row_cnt+1), (self.dis_x-10,self.dis_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
 		img = cv2.rectangle(img, (50, 50), (img.shape[1]-50, img.shape[0]-50), (0, 255, 0), thickness=1)
 		
-		print('You have counted {} people in this directory.\nThis time, you have counted {} people. Press B to stop.'.format(lastrow, frm_ppl_cnt))
-		frm_ppl_cnt = int(frm_ppl_cnt)+1
+		print('You have counted {} people in this directory.\nThis time, you have counted {} people. Press B to stop.'.format(lastrow, row_cnt+1))
 		
-		with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
-			f.write(str(frm_ppl_cnt))
-			
 		if not annotation_checker:
 			row = 0
 			df = pd.read_csv(csvpath, index_col=0)
@@ -177,7 +231,7 @@ class Annotation:
 					
 		df = pd.read_csv(csvpath, index_col=0)
 		if k==120:
-			if annotaion_checker:
+			if annotation_checker:
 				series = pd.Series([croppeddir, self.dis_x, self.dis_y, 'r', self.outer_circle], index=df.columns)
 			else:
 				df = self.Insert_row(row+1, df, [os.path.join(path, os.path.basename(croppeddir)), self.dis_x, self.dis_y, 'r', self.outer_circle])
@@ -196,16 +250,8 @@ class Annotation:
 			df = df.append(series, ignore_index=True)  # only annotaion
 		
 		df.to_csv(csvpath)
-		if resume == True or annotation_checker==False: # for checker also
-			num_of_files_in_LAST_dir = len(glob.glob(croppeddir + "/LAST/*[0-9]*"))
-			print("saved: " + croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir) + ".jpg")
-			cv2.imwrite(croppeddir + "/LAST/" + str(num_of_files_in_LAST_dir) + ".jpg", img)
-		else:
-			cv2.imwrite(croppeddir + "/LAST/" + str(lastrow - csvcurrentimg) + ".jpg", img)
 		
-	def delete_nearest_pt(self, img, csvpath, path, fname, windowname):
-		deletedir = os.path.dirname(fname) + "_output/" + os.path.basename(fname)
-		csvimgcnt = row = start_of_newimg_index = lowest_i = 0
+	def delete_nearest_pt(self, initimg, csvpath, path, fname, windowname):
 		dist = 999999999999
 		df = pd.read_csv(csvpath, index_col=0)
 		for i in range(len(df)):
@@ -214,54 +260,11 @@ class Annotation:
 				if dist > pow(self.dis_x - cal_x, 2) + pow(self.dis_y - cal_y, 2):
 					dist = pow(self.dis_x - cal_x, 2) + pow(self.dis_y - cal_y, 2)
 					lowest_i = i
-				csvimgcnt+=1
-				row=i
-				
-		if csvimgcnt==0:
-			return img
 		
-		start_of_newimg_index = row - csvimgcnt + 1
-		num = lowest_i + 1 - start_of_newimg_index
 		df = df.drop(lowest_i, axis = 0)
 		df = df.reset_index(drop=True)
 		df.to_csv(csvpath)
-		os.remove(deletedir + "/LAST/" + str(csvimgcnt) + ".jpg")
-		iteration = csvimgcnt-int(num)
 		
-		for i in range(1, iteration+1, 1): #this two loops should be one. future work
-			recov = cv2.imread(deletedir + "/LAST/"+str(int(num)-1)+".jpg")
-			df = pd.read_csv(csvpath, index_col=0)
-			for j in range(1, i+1, 1):
-				recov_x, recov_y = df.loc[start_of_newimg_index+j+int(num)-2, 'x'], df.loc[start_of_newimg_index+j+int(num)-2, 'y']
-				recov_color = df.loc[start_of_newimg_index+j+int(num)-2, 'color']
-				recov_outer_circle = df.loc[start_of_newimg_index+j+int(num)-2, 'outer_circle']
-				
-				if recov_color=='g': #green
-					recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 255, 0), self.circle_thickness)
-				elif recov_color=='b': #blue
-					recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (255, 0, 0), self.circle_thickness)
-				elif recov_color=='r': #red
-					recov = cv2.circle(recov, (recov_x, recov_y), recov_outer_circle, (0, 0, 255), self.circle_thickness)
-					
-				recov = cv2.circle(recov, (recov_x, recov_y), 1, (255, 255, 255), -1)
-				if (self.show_count):
-					recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-					recov = cv2.putText(recov, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
-			cv2.imwrite(deletedir+ "/LAST/" + str(i+int(num)-1) +".jpg", recov)
-		
-		img = cv2.imread(deletedir + "/LAST/" + str(csvimgcnt-1) + ".jpg")
-		
-		cv2.namedWindow(windowname, cv2.WINDOW_NORMAL)
-		cv2.imshow(windowname, img)
-		
-		with open(deletedir + "/frame_people_count.txt") as f:
-			frm_ppl_cnt = f.read()
-		frm_ppl_cnt = int(frm_ppl_cnt)
-		with open(deletedir + "/frame_people_count.txt", mode='w') as f:
-			f.write(str(frm_ppl_cnt-1))
-		
-		return img
-	
 	def delete_nearest_mask(self):
 		lowest_i = 0
 		dist = 999999999999
@@ -289,33 +292,6 @@ class Annotation:
 		df.to_csv(csvpath)
 		os.rename(self.mask_csv_path, self.mask_csv_path[:-4] + "_pending.csv")
 		os.rename(croppeddir, croppeddir + "_pending")
-	
-	def dragging(self, event, x, y, flags, param):
-		initimg, img, image_process_check, fname, path, x_fix = param
-		height, width = img.shape[0], img.shape[1]
-		
-		if initimg.shape[0]>1200.0: #shape[0] is height
-			self.dis_x = int(x * (initimg.shape[0]/1200.0))
-			self.dis_y = int(y * (initimg.shape[0]/1200.0)) if x_fix == False else self.dis_y
-		else:
-			self.dis_x = x
-			self.dis_y = y if x_fix == False else self.dis_y
-		
-		drag = copy.copy(img)
-		drag = cv2.rectangle(drag, (50, 50), (width-50, height-50), (40, 61, 20), thickness=2)
-		
-		if event == cv2.EVENT_MOUSEMOVE:
-			self.discriminator(initimg, drag, fname, height, width, image_process_check)
-	
-	def initial_frame_setting(self, croppeddir, fname, img): # only for annotation (not for checker)
-		if not os.path.exists(croppeddir):
-			os.makedirs(croppeddir)
-			os.makedirs(croppeddir + "/LAST/")
-			with open(croppeddir + "/frame_people_count.txt", mode='w') as f:
-				f.write('1')
-			mask_csv = pd.DataFrame(columns=['min_mask_x', 'max_mask_x', 'min_mask_y', 'max_mask_y'])
-			mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(fname) + ".csv"))
-		cv2.imwrite(croppeddir + "/LAST/0.jpg", img)
 		
 	def minor_functions(self, k, initimg, img, move_file, image_process_check, x_fix, end, locked):
 		### Doesn't matter whether locked below.

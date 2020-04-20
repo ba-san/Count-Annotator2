@@ -1,7 +1,7 @@
 from utils import *
 
 def main():
-	folder = "crowd_night_annotation" # must be "OO_output"
+	folder = "mini" # must be "OO_output"
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	path = PWD + folder + "_output"
@@ -18,15 +18,14 @@ def main():
 	grid_thickness = 2
 	denoise = True
 	center_white = False
-	show_count = True
+	show_count = False
 	##########################
 	
 	for croppeddir in files2:
 		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
-		frm_ppl_cnt = 1
 		break_check = locked = x_fix = False
 		annotation_checker = False
-		pend_flaging_1st_time = True
+		pending_1st_time = True
 		image_process_check = {'grid_binary': False, 'sharp': False, 'hist_all': False, 'hist_partial': 0, 'mask': 0}
 		csvcurrentimg = sum(1 for i in open(csvpath)) - 1
 		basename = os.path.basename(croppeddir)
@@ -34,26 +33,23 @@ def main():
 		### for checker ###
 		if basename[-8:] == "_cropped" or basename[-8:] == "_checked" or basename[-4:] == ".csv":
 			break_check=True
-	
+		
 		if not bool(glob.glob(croppeddir + "/*annotated.jpg")):
 			break_check=True
 		
-		if basename[-8:] == "_pend_flaging":
-			pend_flaging_1st_time = False
+		if basename[-8:] == "_pending":
+			pending_1st_time = False
 		###################
 		
 		if break_check==False:
 			end_flag = 0
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
-			
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv")
-			
-			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))-1 # different from annotation. this is for 'black.jpg'
-			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
+			img = initimg
+			img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 			
 			cv2.namedWindow(croppeddir, cv2.WINDOW_NORMAL)
 			cv2.imshow(croppeddir, img)
-			
 			cv2.setMouseCallback(croppeddir, exe.dragging, [initimg, img, image_process_check, croppeddir, path, x_fix])
 			
 			while True:
@@ -86,7 +82,8 @@ def main():
 					## delete nearest point
 					elif k==118: #input 'v'
 						try:
-							img = exe.delete_nearest_pt(img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+							exe.delete_nearest_pt(initimg, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+							img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 						except:
 							pass
 						
@@ -97,7 +94,7 @@ def main():
 						if image_process_check['mask']==0:
 							mask_csv = pd.read_csv(exe.mask_csv_path, index_col=0)
 							series = pd.Series([exe.min_mask_x, exe.max_mask_x, exe.min_mask_y, exe.max_mask_y], index=mask_csv.columns)
-							mask_csv = mask_csv.append_flag(series, ignore_index=True)
+							mask_csv = mask_csv.append(series, ignore_index=True)
 							mask_csv.to_csv(exe.mask_csv_path)
 							
 					elif k==102: #input 'f'
@@ -107,8 +104,8 @@ def main():
 							pass
 							
 					elif k==112: #input 'p'
-						if pend_flaging_1st_time:
-							exe.pend_flaging(csvpath, croppeddir)
+						if pending_1st_time:
+							exe.pending(csvpath, croppeddir)
 						break
 						
 				img, image_process_check, x_fix, end_flag, locked = exe.minor_functions(k, initimg, img, croppeddir, image_process_check, x_fix, end_flag, locked)

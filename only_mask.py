@@ -1,7 +1,7 @@
 from utils import *
 
 def main():
-	folder = "20-new2" # must be "OO_output"
+	folder = "mini" # must be "OO_output"
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	path = PWD + folder + "_output"
@@ -18,12 +18,11 @@ def main():
 	grid_thickness = 2
 	denoise = True
 	center_white = False
-	show_count = True
+	show_count = False
 	##########################
 	
 	for croppeddir in files2:
 		exe = Annotation(outer_circle, rectangle_thickness, circle_thickness, grid_thickness, denoise, center_white, show_count)
-		frm_ppl_cnt = 1
 		break_check = locked = x_fix = False
 		annotation_checker = False
 		pending_1st_time = True
@@ -52,12 +51,11 @@ def main():
 				mask_csv = pd.DataFrame(columns=['min_mask_x', 'max_mask_x', 'min_mask_y', 'max_mask_y'])
 				mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv"))
 			
-			LAST_item_cnt = len(glob.glob(croppeddir + "/LAST/*"))-1 # different from annotation. this is for 'black.jpg'
-			img = cv2.imread(croppeddir + "/LAST/" + str(LAST_item_cnt-1) + ".jpg")
+			img = initimg
+			img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 			
 			cv2.namedWindow(croppeddir, cv2.WINDOW_NORMAL)
 			cv2.imshow(croppeddir, img)
-			
 			cv2.setMouseCallback(croppeddir, exe.dragging, [initimg, img, image_process_check, croppeddir, path, x_fix])
 			
 			while True:
@@ -65,8 +63,12 @@ def main():
 				end_flag-=1 if end_flag > 0 else 0
 				
 				if locked == False:
+					## check object
+					if k == 99 or k==120 or k==122: # input 'z', 'x' or 'c'
+						exe.check_pnt(img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker)
+						
 					## ask to move to the next image
-					if k==13: #enter key
+					elif k==13: #enter key
 						print('You are really OK to process current image and move to the next image? If yes, press \'n\'.')
 						end_flag = 2
 						
@@ -83,6 +85,14 @@ def main():
 						with open(croppeddir + '/mask_finished.txt', mode='w') as f:
 							f.write('Mask Finished.')
 						break
+						
+					## delete nearest point
+					elif k==118: #input 'v'
+						try:
+							exe.delete_nearest_pt(initimg, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+							img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+						except:
+							pass
 						
 					## black mask
 					elif k==100: # input 'd'
