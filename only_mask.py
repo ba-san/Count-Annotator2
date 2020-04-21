@@ -1,7 +1,7 @@
 from utils import *
 
 def main():
-	folder = "mini" # must be "OO_output"
+	folder = "crowd_night_annotation" # must be "OO_output"
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	path = PWD + folder + "_output"

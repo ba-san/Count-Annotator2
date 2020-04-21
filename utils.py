@@ -198,9 +198,6 @@ class Annotation:
 					img = cv2.putText(img, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
 					img = cv2.putText(img, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
 					
-		cv2.namedWindow(windowname, cv2.WINDOW_NORMAL)
-		cv2.imshow(windowname, img)
-		
 		return img
 		
 	def check_pnt(self, img, k, resume, csvcurrentimg, croppeddir, csvpath, path, annotation_checker):

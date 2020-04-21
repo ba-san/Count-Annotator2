@@ -1,8 +1,8 @@
 from utils import *
 
 def main():
-	#folder = "crowd_night_annotation" #input images in this directory
-	folder = "mini" #input images in this directory
+	folder = "crowd_night_annotation" #input images in this directory
+	#folder = "mini" #input images in this directory
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	files=glob.glob(PWD + folder + "/*")
@@ -81,12 +81,10 @@ def main():
 			cv2.imshow(fname, img)
 			cv2.imwrite(croppeddir + "/LAST/0.jpg", initimg)
 			
-			print('id before first callback:{}'.format(id(img)))
 			cv2.setMouseCallback(fname, exe.dragging, [initimg, img, image_process_check, fname, path, x_fix])
 			
 			while True:
 				k = cv2.waitKey(0) # waiting input
-				
 				end_flag-=1 if end_flag > 0 else 0
 				
 				if locked == False:
@@ -148,6 +146,7 @@ def main():
 				img, image_process_check, x_fix, end_flag, locked = exe.minor_functions(k, initimg, img, fname, image_process_check, x_fix, end_flag, locked)
 				
 				cv2.setMouseCallback(fname, exe.dragging, [initimg, img, image_process_check, fname, path, x_fix])
+		
 			## for annotation (not for checker)
 			successive_new_frame = True
 			resume = False
