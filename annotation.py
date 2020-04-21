@@ -19,7 +19,7 @@ def main():
 	grid_thickness = 1
 	denoise = True
 	center_white = False
-	show_count = False
+	show_count = True
 	##########################
 	
 	if not os.path.exists(path): # only for annotation (not for checker)
@@ -57,18 +57,18 @@ def main():
 				
 			successive_new_frame = False
 			img = initimg
-			img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
+			img = exe.read_pt(initimg, img, csvpath, path, croppeddir, fname, fname)
 			
 		else:
 			if os.path.exists(croppeddir):# already exist
 				annotation_checker = False
 				if ("_pending" in croppeddir) and (bool(glob.glob(croppeddir + "/*annotated.jpg"))==False): # when pending(not finished)
 					pending_1st_time = False
-					img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
+					img = exe.read_pt(initimg, img, csvpath, path, croppeddir, fname, fname)
 				elif (bool(glob.glob(croppeddir + "/*annotated.jpg"))==True): # finished
 					break_check = True
 				else: # last time, ended 'b' img
-					img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
+					img = exe.read_pt(initimg, img, csvpath, path, croppeddir, fname, fname)
 			else: # new annotation image
 				img = copy.copy(initimg)
 				exe.initial_frame_setting(croppeddir, fname)
@@ -118,7 +118,7 @@ def main():
 					elif k==118: #input 'v'
 						try:
 							exe.delete_nearest_pt(initimg, csvpath, path, fname, fname)
-							img = exe.read_pt(initimg, img, csvpath, path, fname, fname)
+							img = exe.read_pt(initimg, img, csvpath, path, croppeddir, fname, fname)
 						except:
 							pass
 						

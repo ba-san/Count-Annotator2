@@ -46,7 +46,7 @@ def main():
 			initimg = cv2.imread(croppeddir + "/LAST/0.jpg")
 			exe.mask_csv_path = os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv")
 			img = initimg
-			img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+			img = exe.read_pt(initimg, img, csvpath, path, croppeddir, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 			
 			cv2.namedWindow(croppeddir, cv2.WINDOW_NORMAL)
 			cv2.imshow(croppeddir, img)
@@ -83,7 +83,7 @@ def main():
 					elif k==118: #input 'v'
 						try:
 							exe.delete_nearest_pt(initimg, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
-							img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+							img = exe.read_pt(initimg, img, csvpath, path, croppeddir, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 						except:
 							pass
 						

@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from utils import *
 
 def main():
-	folder = "crowd_night_annotation" # must be "OO_output"
+	folder = "test1" # must be "OO_output"
 	PWD = os.getcwd() + "/" # for linux
 	#PWD = os.getcwd() + "\\" # for windows
 	path = PWD + folder + "_output"
@@ -52,7 +53,7 @@ def main():
 				mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(croppeddir) + ".csv"))
 			
 			img = initimg
-			img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+			img = exe.read_pt(initimg, img, csvpath, path, croppeddir, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 			
 			cv2.namedWindow(croppeddir, cv2.WINDOW_NORMAL)
 			cv2.imshow(croppeddir, img)
@@ -90,7 +91,7 @@ def main():
 					elif k==118: #input 'v'
 						try:
 							exe.delete_nearest_pt(initimg, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
-							img = exe.read_pt(initimg, img, csvpath, path, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
+							img = exe.read_pt(initimg, img, csvpath, path, croppeddir, os.path.join(path[:-7], os.path.basename(croppeddir)), croppeddir)
 						except:
 							pass
 						

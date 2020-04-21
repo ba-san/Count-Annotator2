@@ -175,12 +175,13 @@ class Annotation:
 			mask_csv = pd.DataFrame(columns=['min_mask_x', 'max_mask_x', 'min_mask_y', 'max_mask_y'])
 			mask_csv.to_csv(os.path.join(croppeddir, os.path.basename(fname) + ".csv"))
 			
-	def read_pt(self, initimg, img, csvpath, path, fname, windowname):
+	def read_pt(self, initimg, img, csvpath, path, croppeddir, fname, windowname):
+		row_cnt = self.get_row_cnt(csvpath, path, croppeddir)
 		img = copy.copy(initimg)
-		csvimgcnt = 1
-		row = start_of_newimg_index = lowest_i = 0
 		df = pd.read_csv(csvpath, index_col=0)
+		count = 1
 		for i in range(len(df)):
+			print(os.path.join(path, os.path.basename(fname)))
 			if df.loc[i, 'image'] == os.path.join(path, os.path.basename(fname)):
 				recov_x, recov_y = df.loc[i, 'x'], df.loc[i, 'y']
 				recov_color = df.loc[i, 'color']
@@ -195,8 +196,9 @@ class Annotation:
 					
 				img = cv2.circle(img, (recov_x, recov_y), 1, (255, 255, 255), -1)
 				if (self.show_count):
-					img = cv2.putText(img, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
-					img = cv2.putText(img, str(j+int(num)-1), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+					img = cv2.putText(img, str(count), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (30,53,76), thickness=4)
+					img = cv2.putText(img, str(count), (recov_x-10,recov_y+20), cv2.FONT_HERSHEY_PLAIN, 1, (42,185,237), thickness=1)
+					count+=1
 					
 		return img
 		
