@@ -5,7 +5,7 @@ This program is an annotation support program for creating datasets of training 
 You can create point-annotated images for object counting and a CSV file that contains each point's location.  
 The programs work on both Linux and Windows.  
 
-You can see the demo movie below (no sound).  
+You can see the demo movie below (click the image and will direct to Youtube).  
 [![DEMO MOVIE](https://img.youtube.com/vi/S-yJkraffeI/0.jpg)](https://www.youtube.com/watch?v=S-yJkraffeI)
 
 (This repository is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  )
@@ -14,10 +14,13 @@ You can see the demo movie below (no sound).
 From a big single frame, the programs will create a myriad of cropped images.  
 To do this, 1.input original images that has objects you want to annotate.  
 <img src="https://user-images.githubusercontent.com/44015510/59644900-02dcbf80-91aa-11e9-8e96-0847db5d2e67.jpg" width="300">  
+
 2.annotate objects manually.  
 <img src="https://user-images.githubusercontent.com/44015510/59645630-e478c300-91ad-11e9-9406-835be1d12c07.jpg" width="300">  
+
 3.The programs will crop images in a sliding window manner (red thick box below).   
 <img src="https://user-images.githubusercontent.com/44015510/59646557-6c60cc00-91b2-11e9-81a4-dfa8adba1004.png" width="300">  
+
 You can get annotated images and a CSV file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
 
