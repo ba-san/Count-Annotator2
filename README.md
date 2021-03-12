@@ -8,6 +8,8 @@ The programs work on both Linux and Windows.
 You can see the demo movie below (click the image and will direct to Youtube).  
 [![DEMO MOVIE](https://img.youtube.com/vi/S-yJkraffeI/0.jpg)](https://www.youtube.com/watch?v=S-yJkraffeI)
 
+Please note that this program is designed to work in teams.
+
 (This repository is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  )
 
 ## Guidance with images
@@ -22,12 +24,12 @@ To do this, 1.input original images that has objects you want to annotate.
 <img src="https://user-images.githubusercontent.com/44015510/59646557-6c60cc00-91b2-11e9-81a4-dfa8adba1004.png" width="300">  
 
 You can get annotated images and a CSV file which contains each point's location. One directory for one frame.  
-<img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
+<img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="1200">
 
 ## Tutorial Workflow
 video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation.py --> checker.py  
 --> cropping.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset.py  
---> move created folder to lessen --> lessen.py --> image_resize_LANCZOS.py
+--> move created folder to lessen --> lessen.py --> (image_resize_LANCZOS.py)
 
 ## Notice: Annotation directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
@@ -50,27 +52,28 @@ pip install -r requirements.txt
 ``` 
 
 ## How to use
-### 0. Converting videos into images
-If you won't use video as input, you can skip here.  
-Most of this script is owe to [this page](https://note.nkmk.me/python-opencv-video-to-still-image/).   
+### 0. (Optional) Converting videos into images 
+If you won't use video as input, you can skip it.  
 
-1. setting path and frame of video2img.py  
-
+1. setting the path and frame in video2img.py  
 ``` 
 foldername = 'demo'
 ``` 
-You can change interval of frames here.  
+
+You can change frame interval here.  
 Just change the number below.  
 ``` 
 	30, cnt, # frame interval, counting videos
 ``` 
+
 2. run by ``` python video2img.py```  
 
 ### 1. Annotation
-1. setting path of annotation.py
+1. setting the path in annotation.py
 ``` 
 folder = "pocari-cm.mp4" #input images in this directory
 ``` 
+
 2.run by ``` python annotation.py```
 
 #### Keyboard intructions
@@ -87,19 +90,18 @@ Z,X,C   -- count object (different colors)
 &nbsp;&nbsp;&nbsp;T&nbsp;&nbsp;&nbsp;   -- refer to original/denoised image (some functions cannot be used while this mode)  
 &nbsp;&nbsp;&nbsp;U&nbsp;&nbsp;&nbsp;   -- show histgram-equalized image  
 &nbsp;&nbsp;&nbsp;Y&nbsp;&nbsp;&nbsp;   -- make image sharp  
-&nbsp;&nbsp;&nbsp;P&nbsp;&nbsp;&nbsp;   -- pending  
+&nbsp;&nbsp;&nbsp;P&nbsp;&nbsp;&nbsp;   -- pend image  
 I,J,K,M-- move pointer up, left, right, down respectively  
 &nbsp;&nbsp;&nbsp;A,S  -- make circle smaller/bigger  
 &nbsp;&nbsp;&nbsp;Q,W  -- make window smaller/bigger  
 Enter(and N)-- move to next image  
 
 ### 2. Double checking
-You must go through this section to crop image.  
-If you are annotating as a team, it is reccomended only a team leader use this script to ensure the quality.  
-If you will run checker.py at different env from "OO_output" was originally created, **change images' path inside
-OO.csv to match to your env!!**  (You can use path_changer.py for this purpose.)  
+If you are annotating as a team, it's highly reccomended only a team leader use this script.  
+In the case you run checker.py at different environments from "OO_output" was originally created, **change images' path inside
+OO.csv to match to your environment!!**  (You can use path_changer.py for this purpose.)  
 
-1. setting path of checker.py
+1. setting the path in checker.py
 ``` 
 folder = "pocari-cm.mp4" # must be "OO_output"
 ``` 
@@ -110,7 +112,7 @@ folder = "pocari-cm.mp4" # must be "OO_output"
 Refer above.  
 
 ### 3. Cropping
-0.check each img's path inside csv is correct.  
+0.make sure each img's path inside csv is correct.  
 (You need to use path_changer.py beforehand if the cropping directory is different from annotation or double checking directory. )  
 
 1.set cropped image size and the intervals of sliding window.   
@@ -131,22 +133,22 @@ Program will automatically detect "OO_checked" files and crops them all at once.
 3.integrate cropped images.  
 Inside your 'OO_output' directory, run ```python integrate_img4dataset.py```.  
 
-### 4. Downsampling
+### 4. (Optional) Downsampling
 0.move cropped directory into 'lessen' directory.
 
-1.set below things inside lessen.py 
+1.set values below in lessen.py 
 ``` 
 source = "pocari-cm.mp4_output_256_256_30_30_0" # set name of the directory
 max_train = 222 # maximum number of train image per class
 max_test = 153 # maximum number of test image per class 
 ``` 
-**Note**: Please be noted that each category direcoty has one csv file.   
-You need to take this into account when run lessen.py.  
+**Note**: Please be noted that each category directory has a single CSV file.   
+You need to take it into account when run lessen.py.  
 
 2.run by ```python lessen.py```  
 
-### 5. Resize
-0.set below things inside image_resize_LANCZOS.py
+### 5. (Optional) Resize
+0.set values below in image_resize_LANCZOS.py
 ``` 
 dirname = "pocari-cm.mp4_output_256_256_30_30_0" # set the directory name
 resized = 32 # set the size here
