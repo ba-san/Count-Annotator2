@@ -3,14 +3,15 @@
 This program is an annotation support program for creating datasets of training images, which is essential in recent image recognition, especially for handling crowd and cell data.  
 
 You can create point-annotated images for object counting and a CSV file that contains each point's location.  
-The programs work on both Linux and Windows.  
+Plus, this programs aims to make small cropped images from a single image like 4K-image.  
 
 You can see the demo movie below (click the image and will direct to Youtube).  
 [![DEMO MOVIE](https://img.youtube.com/vi/S-yJkraffeI/0.jpg)](https://www.youtube.com/watch?v=S-yJkraffeI)
 
-Please note that this program is designed to work in teams.
+The programs work on both Linux and Windows.  
+Please note that programs are designed to work in teams.
 
-(This repository is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  )
+(This repository itself is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  )
 
 ## Guidance with images
 From a big single frame, the programs will create a myriad of cropped images.  
