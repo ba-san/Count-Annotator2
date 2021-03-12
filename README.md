@@ -24,7 +24,7 @@ To do this, 1.input original images that has objects you want to annotate.
 <img src="https://user-images.githubusercontent.com/44015510/59646557-6c60cc00-91b2-11e9-81a4-dfa8adba1004.png" width="300">  
 
 You can get annotated images and a CSV file which contains each point's location. One directory for one frame.  
-<img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="1200">
+<img src="https://user-images.githubusercontent.com/44015510/110974103-7d4b6b00-83a1-11eb-92a8-d61ee7941dbe.png" width="1200">
 
 ## Tutorial Workflow
 video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation.py --> checker.py  
