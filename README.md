@@ -1,33 +1,35 @@
 # Count-Annotator2
+## Overview
+This program is an annotation support program for creating datasets of training images, which is essential in recent image recognition, especially for handling crowd and cell data.  
 
-This repository is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  
+You can create point-annotated images for object counting and a CSV file that contains each point's location.  
+The programs work on both Linux and Windows.  
 
-You can prepare annotated images for object counting and csv file which contains each point's location.  
-The programs can be worked on both Linux and Windows.  
-
-You can see demo movie below.  
+You can see the demo movie below (no sound).  
 [![DEMO MOVIE](https://img.youtube.com/vi/S-yJkraffeI/0.jpg)](https://www.youtube.com/watch?v=S-yJkraffeI)
 
-From a big single frame, this program will create a myriad of cropped images.  
-To do this, 1.input original images.  
+(This repository is a successor of [Count-Annotator](https://github.com/ba-san/Count-Annotator).  )
+
+## Guidance with images
+From a big single frame, the programs will create a myriad of cropped images.  
+To do this, 1.input original images that has objects you want to annotate.  
 <img src="https://user-images.githubusercontent.com/44015510/59644900-02dcbf80-91aa-11e9-8e96-0847db5d2e67.jpg" width="300">  
-2.count objects.  
+2.annotate objects manually.  
 <img src="https://user-images.githubusercontent.com/44015510/59645630-e478c300-91ad-11e9-9406-835be1d12c07.jpg" width="300">  
-3.crop images by sliding window (red boxes below).   
+3.The programs will crop images in a sliding window manner (red thick box below).   
 <img src="https://user-images.githubusercontent.com/44015510/59646557-6c60cc00-91b2-11e9-81a4-dfa8adba1004.png" width="300">  
-You can get annotated images for object counting and csv file which contains each point's location. One directory for one frame.  
+You can get annotated images and a CSV file which contains each point's location. One directory for one frame.  
 <img src="https://user-images.githubusercontent.com/44015510/56486513-c75ba700-6512-11e9-9ca0-ba1e890ccd2a.png" width="400">
 
-## Workflow
-
+## Tutorial Workflow
 video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> annotation.py --> checker.py  
 --> cropping.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset.py  
 --> move created folder to lessen --> lessen.py --> image_resize_LANCZOS.py
 
-## Annotation directory transition  
+## Notice: Annotation directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
-Count-Annotator2 is useful for team annotaion also. Each member can create training data using annotaion2.py and a leader can check each data quality by checker.py.    
+Count-Annotator2 is useful for teams. Each member can create training data using annotaion2.py and a leader can check each data quality by checker.py.    
 
 When you annotate data by annotation2.py, directories for each frame will be created (Blue box).     
 After that, a leader can check each annotated frame by checker.py.  The name of directory checked by him/her will be changed to "OO_checked" (Green box).      
