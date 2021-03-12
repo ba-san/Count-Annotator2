@@ -32,7 +32,7 @@ video2img.py --> copy created img folder to root directory(pocari-cm.mp4) --> an
 --> cropping.py --> inside output folder(pocari-cm.mp4_output), integrate_img4dataset.py  
 --> move created folder to lessen --> lessen.py --> (image_resize_LANCZOS.py)
 
-## Notice: Annotation directory transition  
+### Notice: Annotation directory transition  
 <img src="https://user-images.githubusercontent.com/44015510/56487112-04c13400-6515-11e9-823e-ff84472e5774.png" width="400">  
 
 Count-Annotator2 is useful for teams. Each member can create training data using annotaion2.py and a leader can check each data quality by checker.py.    
